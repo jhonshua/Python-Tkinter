@@ -114,12 +114,63 @@ class Login(tk.Frame):
 #---------------------------------------------------------------------------------           
 class Registro(tk.Frame):
     
+    db_name = "database.db"
+    
     def __init__(self, padre, controlador):
         super().__init__(padre)
         self.pack()
         self.place(x = 0, y = 0, width = 1100, height = 650)
         self.controlador = controlador
         self.widgets()
+    
+    #---------------------------------------------------------------------------------       
+    def validacion(self, user, clave):
+        return len(user)> 0 and len(clave)
+    
+    #---------------------------------------------------------------------------------      
+    def eje_consulta(self, consulta, parametros=()):
+        try:
+            with sqlite3.connect(self.db_name) as conn:
+                cursor = conn.cursor()
+                cursor.execute(consulta, parametros)
+                conn.commit
+                
+        except sqlite3.Error as e:
+             messagebox.showerror(title='Error', message='Error al ejecutar la consulta: {}'.format(e))
+    
+    #---------------------------------------------------------------------------------        
+    def registro(self):
+        user = self.username.get()
+        pas = self.pass_word.get()
+        key = self.key.get()
+        
+        if self.validacion(user, pas):
+            if len(pas) < 6:
+                messagebox.showinfo(title='Error', message='Contrasena demasiado corta')
+                self.username.delete(0, 'end')
+                self.pass_word.delete(0, 'end')
+                
+            else:
+                
+                if key == '1234':
+                    consulta = 'INSERT INTO usuarios VALUES (?,?,?)'
+                    parametros = (None, user, pas )
+                    self.eje_consulta(consulta, parametros)
+                    self.control1()
+                else:
+                    messagebox.showerror(title="Registro", message='Error al ingresar el codigo de registro')
+        else:
+            messagebox.showerror(title='Error', message='Llene sus datos')
+     
+    #---------------------------------------------------------------------------------        
+    def control1(self):
+        self.controlador.show_frame(Container)
+        
+        
+    #--------------------------------------------------------------------------------- 
+    def control2(self):
+        self.controlador.show_frame(Login)
+        
         
     def widgets(self):
         #---------------------------------------------------------------------------------
@@ -169,9 +220,9 @@ class Registro(tk.Frame):
         style.configure('my.TButton', font=("arial", 18, "bold"))
         
         # Login button
-        btn3 = ttk.Button(frame1, text='Registarse', style='my.TButton')
+        btn3 = ttk.Button(frame1, text='Registarse', style='my.TButton', command=self.registro)
         btn3.place(x=80, y=520, width=240, height=40)
 
         # Register button
-        btn4 = ttk.Button(frame1, text='Regresar', style='my.TButton')
+        btn4 = ttk.Button(frame1, text='Regresar', style='my.TButton',command=self.control2)
         btn4.place(x=80, y=570, width=240, height=40)
