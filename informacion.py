@@ -8,4 +8,5 @@ class Informacion(tk.Frame):
         self.widgets()
         
     def widgets(self):
-        pass
+        label = Label(self, text = "Informacion")
+        label.pack()
