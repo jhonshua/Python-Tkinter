@@ -1,0 +1,6 @@
+# Ignorar el entorno virtual
+env/
+
+# Otros patrones que desees ignorar (opcional)
+*.pyc  # Archivos compilados de Python
+__pycache__/  # Directorios de caché de Python
