@@ -15,17 +15,17 @@ Estructura de carpetas propuesta:
 
 PUNTO DE VENTA
 
-   ├── env/  entorno virtual     
-   ├── .gitignore  archivos a excluir del repositorio de Git 
-   ├── clientes.py
-   ├── container.py
-   ├── index.py
-   ├── informacion.py
-   ├── inventario.py 
-   ├── login.py
-   ├── manager.py  punto de entrada de tu aplicación
-   ├── pedidos.py
-   ├── proveedor.py
-   ├── readme.md  documenta el proyecto
-   ├── requirements.txt   librerías 
-   └── ventas.py
+   ├── env/  entorno virtual                    
+   ├── .gitignore  archivos a excluir del repositorio de Git      
+   ├── clientes.py            
+   ├── container.py        
+   ├── index.py               
+   ├── informacion.py                     
+   ├── inventario.py                      
+   ├── login.py                  
+   ├── manager.py  punto de entrada de tu aplicación                 
+   ├── pedidos.py                
+   ├── proveedor.py              
+   ├── readme.md  documenta el proyecto            
+   ├── requirements.txt   librerías             
+   └── ventas.py              
