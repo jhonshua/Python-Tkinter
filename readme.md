@@ -14,23 +14,23 @@ Estructura de carpetas propuesta:
 PUNTO DE VENTA
    
    ├── data/     
-   ├── env/          entorno virtual                      
-   ├── media/        todas las img de la aplicativo
-   |     ├── icons/
+   ├── env/          entorno virtual                                   
+   ├── media/        todas las img de la aplicativo            
+   |     ├── icons/                    
    |     └── img/
-   |           ├── img_productos/
-   |           └── fondo.png
-   |
-   ├── modulos/
-   |     ├── login/
-   |     |     └── login.py
-   |     ├── clientes.py  
-   |     ├── informacion.py   
-   |     ├── inventario.py  
-   |     ├── pedidos.py   
-   |     ├── proveedor.py  
-   |     └── ventas.py  
-   |
+   |           ├── img_productos/                     
+   |           └── fondo.png                             
+   |                                               
+   ├── modulos/                                                
+   |     ├── login/                             
+   |     |     └── login.py                                          
+   |     ├── clientes.py                                          
+   |     ├── informacion.py                                 
+   |     ├── inventario.py                               
+   |     ├── pedidos.py                                  
+   |     ├── proveedor.py                                         
+   |     └── ventas.py                             
+   |                                                        
    ├── .gitignore    archivos a excluir del repositorio de Git         
    ├── container.py        
    ├── index.py               

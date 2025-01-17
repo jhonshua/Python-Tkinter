@@ -1,11 +1,14 @@
+import sqlite3
 from tkinter import *
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, messagebox
+from container import Container
 from PIL import Image, ImageTk
 
- #---------------------------------------------------------------------------------
-
+#---------------------------------------------------------------------------------
 class Login(tk.Frame):
+    
+    db_name = "database.db"
     
     def __init__(self, padre, controlador):
         super().__init__(padre)
@@ -14,10 +17,53 @@ class Login(tk.Frame):
         self.controlador = controlador
         self.widgets()
         
-    def validaciones(self, user, password):
-        return len(user)> 0 and len(password)
+    #---------------------------------------------------------------------------------       
+    def validacion(self, user, clave):
+        return len(user)> 0 and len(clave)
+    
+    #---------------------------------------------------------------------------------   
+    def login(self):
+        user = self.username.get()
+        pas = self.pass_word.get()
         
+        print(user)
+        print(pas)
+        
+        if self.validacion(user, pas):
+            consulta = "SELECT * FROM usuarios WHERE username = ? AND password = ?"
+            parametros = (user, pas)
+            
+            try:
+                with sqlite3.connect(self.db_name) as conn:
+                    cursor = conn.cursor()
+                    cursor.execute(consulta, parametros)
+                    result = cursor.fetchall()
+                    
+                    if result: 
+                        print (result)
+                        self.control1()
+                    else:
+                        self.username.delete(0, 'end')
+                        self.pass_word.delete(0, 'end')
+                        messagebox.showerror(title='Error', message='Usuario y/o contrasena incorrecta')
+                        
+            except sqlite3.Error as e:
+                messagebox.showerror(title='Error', message='No se conecto a la base datos: {}'.format(e))
+        
+        else:
+            messagebox.showerror(title='Error', message='Llene todas las casillas')
+            
+    #---------------------------------------------------------------------------------     
+    def control1(self):
+        self.controlador.show_frame(Container)
+        
+     #---------------------------------------------------------------------------------     
+    def control2(self):
+        self.controlador.show_frame(Registro)
+        
+    #---------------------------------------------------------------------------------       
     def widgets(self):
+        
         #---------------------------------------------------------------------------------
         #imagen de fondo
         fondo = tk.Frame(self, bg='#C6D9E3')
@@ -58,15 +104,14 @@ class Login(tk.Frame):
         style.configure('my.TButton', font=("arial", 18, "bold"))
         
         # Login button
-        btn1 = ttk.Button(frame1, text='Iniciar', style='my.TButton')
+        btn1 = ttk.Button(frame1, text='Iniciar', style='my.TButton', command=self.login)
         btn1.place(x=80, y=440, width=240, height=40)
 
         # Register button
-        btn2 = ttk.Button(frame1, text='Registrar', style='my.TButton')
+        btn2 = ttk.Button(frame1, text='Registrar', style='my.TButton', command=self.control2)
         btn2.place(x=80, y=500, width=240, height=40)
 
- #---------------------------------------------------------------------------------     
-        
+#---------------------------------------------------------------------------------           
 class Registro(tk.Frame):
     
     def __init__(self, padre, controlador):
@@ -77,7 +122,7 @@ class Registro(tk.Frame):
         self.widgets()
         
     def widgets(self):
-         #---------------------------------------------------------------------------------
+        #---------------------------------------------------------------------------------
         #imagen de fondo
         fondo = tk.Frame(self, bg='#C6D9E3')
         fondo.pack()
