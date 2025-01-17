@@ -1,7 +1,7 @@
 from tkinter import *
 from tkinter import ttk
 
-from login import Login, Registro
+from modulos.login.login import Login, Registro
 from container import Container
 
 import sys
@@ -10,7 +10,7 @@ import os
 class Manager(Tk):
     def __init__(self, *args, **kwargs):
         super(). __init__(*args, **kwargs)
-        self.title("Mini Market v1.0")
+        self.title("Mi tienda v1.0")
         self.geometry("1100x650+120+20")
         self.resizable(False, False)
         container = Frame(self)

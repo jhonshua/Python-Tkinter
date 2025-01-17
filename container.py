@@ -1,11 +1,11 @@
 from tkinter import *
 import tkinter as tk
-from ventas import Ventas
-from inventario import Inventario
-from clientes import Clientes
-from pedidos import Pedidos
-from proveedor import Proveedor
-from informacion import Informacion
+from modulos.ventas import Ventas
+from modulos.inventario import Inventario
+from modulos.clientes import Clientes
+from modulos.pedidos import Pedidos
+from modulos.proveedor import Proveedor
+from modulos.informacion import Informacion
 import sys
 import os
 

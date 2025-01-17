@@ -9,23 +9,33 @@ Este proyecto es una aplicación de caja registradora desarrollada en Python uti
    git clone [se quitó una URL no válida]
 
 
-
-
 Estructura de carpetas propuesta:
 
 PUNTO DE VENTA
-
-   ├── env/  entorno virtual                    
-   ├── .gitignore  archivos a excluir del repositorio de Git      
-   ├── clientes.py            
+   
+   ├── data/     
+   ├── env/          entorno virtual                      
+   ├── media/        todas las img de la aplicativo
+   |     ├── icons/
+   |     └── img/
+   |           ├── img_productos/
+   |           └── fondo.png
+   |
+   ├── modulos/
+   |     ├── login/
+   |     |     └── login.py
+   |     ├── clientes.py  
+   |     ├── informacion.py   
+   |     ├── inventario.py  
+   |     ├── pedidos.py   
+   |     ├── proveedor.py  
+   |     └── ventas.py  
+   |
+   ├── .gitignore    archivos a excluir del repositorio de Git         
    ├── container.py        
    ├── index.py               
-   ├── informacion.py                     
-   ├── inventario.py                      
-   ├── login.py                  
-   ├── manager.py  punto de entrada de tu aplicación                 
-   ├── pedidos.py                
-   ├── proveedor.py              
+   ├── LICENSE                           
+   ├── manager.py  punto de entrada de tu aplicación                   
    ├── readme.md  documenta el proyecto            
-   ├── requirements.txt   librerías             
-   └── ventas.py              
+   └── requirements.txt   librerías             
+              
