@@ -14,6 +14,9 @@ class Login(tk.Frame):
         self.controlador = controlador
         self.widgets()
         
+    def validaciones(self, user, password):
+        return len(user)> 0 and len(password)
+        
     def widgets(self):
         #---------------------------------------------------------------------------------
         #imagen de fondo
