@@ -26,8 +26,7 @@ class Login(tk.Frame):
         user = self.username.get()
         pas = self.pass_word.get()
         
-        print(user)
-        print(pas)
+      
         
         if self.validacion(user, pas):
             consulta = "SELECT * FROM usuarios WHERE username = ? AND password = ?"
@@ -40,7 +39,6 @@ class Login(tk.Frame):
                     result = cursor.fetchall()
                     
                     if result: 
-                        print (result)
                         self.control1()
                     else:
                         self.username.delete(0, 'end')
@@ -81,19 +79,25 @@ class Login(tk.Frame):
         
         frame1 = tk.Frame(self, bg = '#ffffff', highlightbackground ='black', highlightthickness = 1 )
         frame1.place(x = 350, y = 50, width = 400, height = 560 )
+           
+        self.logo_image = Image.open('media/icons/tienda.png')
+        self.logo_image = self.logo_image.resize((200, 200))
+        self.logo_image = ImageTk.PhotoImage(self.logo_image)
+        self.logo_label = ttk.Label(frame1, image = self.logo_image)
+        self.logo_label.place(x = 100, y = 20)
         
         #---------------------------------------------------------------------------------
         #input usuario
         user = ttk.Label(frame1, text = "Nombre de usuario", font = "arial 16 bold", background = "#ffffff")
         user.place(x = 100, y = 250)
-        self.username = ttk.Entry(frame1, font = "arial 16 bold")
+        self.username = ttk.Entry(frame1, font = "arial 16 bold", justify='center')
         self.username.place(x = 80, y = 290, width = 240, height = 40 )
     
         #---------------------------------------------------------------------------------
         #input pass
         password = ttk.Label(frame1, text = "Contraseña",font = "arial 16 bold", background = "#ffffff")
         password.place(x = 100, y = 340)
-        self.pass_word = ttk.Entry(frame1, show='*', font = "arial 16 bold")
+        self.pass_word = ttk.Entry(frame1, show='*', font = "arial 16 bold",  justify='center')
         self.pass_word.place(x = 80, y = 380, width = 240, height = 40 )
         
         #---------------------------------------------------------------------------------
@@ -190,6 +194,12 @@ class Registro(tk.Frame):
         
         frame1 = tk.Frame(self, bg = '#ffffff', highlightbackground ='black', highlightthickness = 1 )
         frame1.place(x = 350, y = 10, width = 400, height = 630 )
+        
+        self.logo_image = Image.open('media/icons/tienda.png')
+        self.logo_image = self.logo_image.resize((200, 200))
+        self.logo_image = ImageTk.PhotoImage(self.logo_image)
+        self.logo_label = ttk.Label(frame1, image = self.logo_image)
+        self.logo_label.place(x = 100, y = 20)
         
         #---------------------------------------------------------------------------------
         #input usuario
