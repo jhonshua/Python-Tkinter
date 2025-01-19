@@ -12,30 +12,28 @@ Este proyecto es una aplicación de caja registradora desarrollada en Python uti
 
 
 Estructura de carpetas propuesta:
-
-PUNTO DE VENTA
    
 PUNTO DE VENTA
-├── data/
-│   └── env/  # Entorno virtual
-├── media/
-│   ├── icons/
-│   └── img/
-│       └── img_productos/
-│           └── fondo.png
-├── modulos/
-│   ├── login/
-│   ├── clientes.py
-│   ├── informacion.py
-│   ├── inventario.py
-│   ├── pedidos.py
-│   ├── proveedor.py
-│   └── ventas.py
-├── .gitignore
-├── container.py
-├── index.py
-├── LICENSE
-├── manager.py
-├── readme.md
-├── requirements.txt             
+├── data/                                                
+│   └── env/  # Entorno virtual                                            
+├── media/                             
+│   ├── icons/                                                                      
+│   └── img/                                 
+│       └── img_productos/                                  
+│           └── fondo.png                             
+├── modulos/                                 
+│   ├── login/                                     
+│   ├── clientes.py                                                        
+│   ├── informacion.py                                         
+│   ├── inventario.py                                                   
+│   ├── pedidos.py                                                            
+│   ├── proveedor.py                                                       
+│   └── ventas.py                                                                   
+├── .gitignore                                                                         
+├── container.py                                                                                
+├── index.py                                                                                       
+├── LICENSE                                                                                     
+├── manager.py                                                                                     
+├── readme.md                                                                                      
+├── requirements.txt                                                                               
               
