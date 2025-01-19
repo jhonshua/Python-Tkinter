@@ -82,8 +82,9 @@ class Inventario(tk.Frame):
         btn1 = tk.Button(lblframe_botones, text="Agregar", font="arial 14 bold", command=self.agregar_articulo )
         btn1.place(x=20, y=20, width=180, height=40)
         
-        btn2 = tk.Button(lblframe_botones, text="Editar", font="arial 14 bold")
+        btn2 = tk.Button(lblframe_botones, text="Editar", font="arial 14 bold", command= self.editar_articulo)
         btn2.place(x=20, y=80, width=180, height=40)
+    
     #---------------------------------------------------------------------------------
         
     def load_image(self):
@@ -102,6 +103,7 @@ class Inventario(tk.Frame):
             
             image_label = tk.Label(self.frameimg, image=self.image_tk)
             image_label.place(x=0, y=0, width=200, height=200)
+    
     #---------------------------------------------------------------------------------
     
     def articulos_combobox(self):
@@ -112,6 +114,7 @@ class Inventario(tk.Frame):
         self.comboboxbuscar['values'] = self.articulos
     
     #---------------------------------------------------------------------------------      
+    
     def agregar_articulo(self):
         top = tk.Toplevel(self)
         top.title("Agregar Articulo")
@@ -197,10 +200,12 @@ class Inventario(tk.Frame):
         tk.Button(top, text='Cancelar', font="arial 12 bold",command= top.destroy ).place(x=260, y=260, width=150, height=40 )     
         
     #---------------------------------------------------------------------------------  
+    
     def cargar_articulos(self, filtro=None, categoria=None):
         self.after(0, self._cargar_articulos, filtro, categoria)
     
     #---------------------------------------------------------------------------------  
+    
     def _cargar_articulos(self, filtro=None, categoria=None):
         for widget in self.scrollable_frame.winfo_children():
             widget.destroy()
@@ -222,6 +227,7 @@ class Inventario(tk.Frame):
             self.mostrar_articulo(articulo, precio, image_path)
                       
     #---------------------------------------------------------------------------------
+    
     def mostrar_articulo(self, articulo, precio, image_path):
         article_frame = tk.Frame(self.scrollable_frame, bg='white', relief='solid')
         article_frame.grid(row=self.row, column=self.column, padx=10, pady=10)
@@ -315,4 +321,110 @@ class Inventario(tk.Frame):
 
     #---------------------------------------------------------------------------------  
     
-    
+    def editar_articulo(self):
+        selcted_item = self.comboboxbuscar.get()
+        
+        if not selcted_item :
+            messagebox.showerror("Error", "Selecciona un articulo para editar")
+            return
+        
+        self.cur.execute("SELECT articulo, precio, costo, stock, estado, image_path FROM articulos WHERE articulo=?",(selcted_item,))
+        resultado = self.cur.fetchall()
+        
+        if not resultado:
+            messagebox.showerror("Error","Articulo no encontrado")
+            return
+        
+        top = tk.Toplevel(self)
+        top.title("Editar Articulo")
+        top.geometry("700x400+200+50")
+        top.config(bg='#C6D9E3')
+        top.resizable(False, False)
+        
+        top.transient(self.master)
+        top.grab_set()
+        top.focus_set()
+        top.lift()
+        print(resultado)
+        articulo, precio, costo, stock, estado, image_path = resultado[0]
+        
+        tk.Label(top, text="Articulo", font="arial 12 bold", bg='#C6D9E3').place(x=20, y=20, width=80, height=25)
+        entry_articulo = ttk.Entry(top, font='arial 12 bold')
+        entry_articulo.place(x=120, y=20, width=250, height=30)
+        entry_articulo.insert(0, articulo)
+            
+        tk.Label(top, text="Precio", font="arial 12 bold", bg='#C6D9E3').place(x=20, y=60, width=80, height=25)
+        entry_precio = ttk.Entry(top, font='arial 12 bold')
+        entry_precio.place(x=120, y=60, width=250, height=30)
+        entry_precio.insert(0, precio)
+        
+        tk.Label(top, text="Costo", font="arial 12 bold", bg='#C6D9E3').place(x=20, y=100, width=80, height=25)
+        entry_costo = ttk.Entry(top, font='arial 12 bold')
+        entry_costo.place(x=120, y=100, width=250, height=30)
+        entry_costo.insert(0, costo)
+        
+        tk.Label(top, text="Stock", font="arial 12 bold", bg='#C6D9E3').place(x=20, y=140, width=80, height=25)
+        entry_stock = ttk.Entry(top, font='arial 12 bold')
+        entry_stock.place(x=120, y=140, width=250, height=30)
+        entry_stock.insert(0, stock)
+        
+        tk.Label(top, text="Estado", font="arial 12 bold", bg='#C6D9E3').place(x=20, y=200, width=80, height=25)
+        entry_estado = ttk.Entry(top, font='arial 12 bold')
+        entry_estado.place(x=120, y=180, width=250, height=30)
+        entry_estado.insert(0, estado)
+        
+        self.frameimg = tk.Frame(top, bg='#ffffff', highlightbackground="gray", highlightthickness=1 )
+        self.frameimg.place(x=440, y=30, width=200, height=200)
+        
+        if image_path and os.path.exists(image_path):
+            image = Image.open(image_path)
+            image = image.resize((200, 200), Image.LANCZOS)
+            self.product_img = ImageTk.PhotoImage(image)
+            self.image_path = image_path
+            image_label = tk.Label(self.frameimg, image=self.product_img)
+            image_label.pack(expand=True, fill="both")
+        
+        btnimage = tk.Button(top, text='Cargar imagen', font="arial 12 bold",command=self.load_image )
+        btnimage.place(x=470, y=260, width=150, height=40 )  
+        
+        def guardar():  
+        
+            nuevo_articulo = entry_articulo.get()
+            precio =  entry_precio.get()
+            costo =  entry_costo.get()
+            stock =  entry_stock.get()
+            estado =  entry_estado.get()
+            
+            if not nuevo_articulo or not precio or not costo or not estado:
+                messagebox.showerror("Error", "Todos los campos debe ser completados")
+                return
+            
+            try:
+                precio = float(precio)
+                costo = float(costo)
+                stock = int(stock)
+                
+            except ValueError:
+                messagebox.showerror("Error", "precio, costo y stock debe ser numeros validos")
+                return
+            
+            if hasattr(self, 'image_path'):
+                image_path = self.image_path
+                
+            else:
+                image_path = (r'media/icons/img_default.png')
+                
+            # try:
+            self.cur.execute("UPDATE articulos SET articulo=?, precio=?, costo=?, stock=?,image_path=?, estado=? WHERE articulo=?", (nuevo_articulo, precio, costo, stock, image_path, estado, selcted_item))
+            self.con.commit()
+            self.articulos_combobox()
+            self.after(0,lambda: self.cargar_articulos(filtro=nuevo_articulo))
+            top.destroy()
+            messagebox.showinfo('Exito','Articulo actualizado correctamente')
+                
+  
+            
+            
+        tk.Button(top, text='Guardar', font="arial 12 bold",command= guardar ).place(x=50, y=260, width=150, height=40 )
+        
+        tk.Button(top, text='Cancelar', font="arial 12 bold",command= top.destroy ).place(x=260, y=260, width=150, height=40 )     
