@@ -14,13 +14,14 @@ Este proyecto es una aplicación de caja registradora desarrollada en Python uti
 Estructura de carpetas propuesta:
    
 PUNTO DE VENTA
+
 ├── data/                                                
 │   └── env/  # Entorno virtual                                            
 ├── media/                             
 │   ├── icons/                                                                      
 │   └── img/                                 
 │       └── img_productos/                                  
-│           └── fondo.png                             
+│       └── fondo.png                             
 ├── modulos/                                 
 │   ├── login/                                     
 │   ├── clientes.py                                                        
