@@ -16,21 +16,21 @@ PUNTO DE VENTA
    ├── data/     
    ├── env/          entorno virtual                                   
    ├── media/        todas las img de la aplicativo            
-   |     ├── icons/                    
-   |     └── img/
-   |           ├── img_productos/                     
-   |           └── fondo.png                             
-   |                                               
+   |        ├── icons/                    
+   |        └── img/
+   |              ├── img_productos/                                     
+   |              └── fondo.png  
+   |                                                                    
    ├── modulos/                                                
-   |     ├── login/                             
-   |     |     └── login.py                                          
-   |     ├── clientes.py                                          
-   |     ├── informacion.py                                 
-   |     ├── inventario.py                               
-   |     ├── pedidos.py                                  
-   |     ├── proveedor.py                                         
-   |     └── ventas.py                             
-   |                                                        
+   |           ├── login/                             
+   |           |     └── login.py                                          
+   |           ├── clientes.py                                          
+   |           ├── informacion.py                                 
+   |           ├── inventario.py                               
+   |           ├── pedidos.py                                  
+   |           ├── proveedor.py                                         
+   |           └── ventas.py                             
+   |                                                                           
    ├── .gitignore    archivos a excluir del repositorio de Git         
    ├── container.py        
    ├── index.py               
