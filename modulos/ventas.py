@@ -2,15 +2,240 @@ import sqlite3
 from tkinter import *
 import tkinter as tk
 from tkinter import ttk, messagebox, simpledialog
+import datetime
+import threading
 import sys
 import os
 
 class Ventas(tk.Frame):
+
+    db_name = "database.db"
     
     def __init__(self, padre):
         super().__init__(padre)
+        self.numero_factura = self.obtener_numero_factura_actual()
+        self.productos_seleccionados = []
         self.widgets()
+        self.cargar_productos()
+        self.timer_producto = None
         
+
+    def  obtener_numero_factura_actual(self):
+        try:
+            conn = sqlite3.connect(self.db_name)
+            c = conn.cursor()
+            c.execute("SELECT MAX(factura) FROM ventas")
+            last_invoice_number = c.fetchone()[0]
+            conn.close
+            return last_invoice_number + 1 if last_invoice_number is not None else 1
+        except sqlite3.Error as e:
+            print("Error obteniendo el numero de la factura: ", e)
+            return 1
+
+    #---------------------------------------------------------------------------------
+
+    def cargar_productos(self):
+        try:
+            conn = sqlite3.connect(self.db_name)
+            c = conn.cursor()
+            c.execute("SELECT articulo FROM articulos")
+            self.products = [product[0] for product in c.fetchall()]
+            self.entry_producto['values'] = self.products
+            conn.close()
+        except sqlite3.Error as e:
+            print("Error cargando producto:", e)
+    
+    #---------------------------------------------------------------------------------
+
+    def filtrar_productos(self, event):
+        if self.timer_producto: 
+            self.timer_producto.cancel()
+        self.timer_producto = threading.Timer(0.5, self._filter_products)
+        self.timer_producto.start()
+    
+    #---------------------------------------------------------------------------------
+
+    def _filter_products(self):
+        typed = self.entry_producto.get()
+
+        if typed == '':
+            data == self.products
+        else:
+            data = [item for item in self.products if typed.lower() in item.lower()]
+
+        if data:
+            self.entry_producto['values'] = data
+            self.entry_producto.event_generate('<Down>')
+        else:
+            self.entry_producto['value'] = ['No se encuentra resultado']
+            self.entry_producto.event_generate('<Down>')
+            self.entry_producto.delete(0, tk.END)
+
+    #---------------------------------------------------------------------------------
+
+    def agregar_articulos(self):
+        cliente = self.entry_cliente.get()
+        producto = self.entry_producto.get()
+        cantidad = self.entry_cantidad.get()
+
+        if not cliente:
+            messagebox.showerror("Error", "Por favor seleccione un cliente.")
+        
+        if not producto:
+            messagebox.showerror("Error", "Por favor seleccione un producto.")
+
+        if not cantidad.isdigit() or int(cantidad) <= 0 :
+            messagebox.showerror("Error", "Por favor ingrese una cantidad validad.")
+            return
+        
+        cantidad = int(cantidad)
+        cliente = self.entry_cliente.get()
+
+        try:
+            conn = sqlite3.connect(self.db_name)
+            c = conn.cursor()
+            c.execute("SELECT precio, costo, stock FROM articulos WHERE articulo=?",(producto,))
+            resultado = c.fetchone()
+
+            if resultado is None:
+                messagebox.showerror("Error","Producto no encontrado")
+                return
+            precio, costo, stock = resultado
+
+            if cantidad > stock:
+                messagebox.showerror("Error", f"Stock insuficiente. Solo hay {stock} unidades disponiobles.")
+
+            total = precio * cantidad
+            total_cop = "{:,.0f}".format(total)
+
+            self.tre.insert("", "end", values=(self.numero_factura, cliente, producto, "{:,.0f}".format(precio), cantidad, total_cop))
+            self.productos_seleccionados.append((self.numero_factura, cliente, producto, precio, cantidad, total_cop, costo))
+
+            conn.close()
+
+            self.entry_producto.set('')
+            self.entry_cantidad.set(0, 'end')
+
+        except sqlite3.Error as e:
+            print("Error al agregar articulo", e)
+            
+        self.calcular_precio_total()
+    
+    #---------------------------------------------------------------------------------
+
+    def calcular_precio_total(self):
+        total_pagar = sum(float(self.tre.item(item)["value"][-1].replace(" ","").replace(",",""))for item in self.tre.get_children())
+        total_pagar_cop = "{:,.0f}".format(total_pagar)
+        self.label_precio_total.config(text=f"Precio a Pagar: $ {total_pagar_cop}")
+    
+    #---------------------------------------------------------------------------------
+
+    def actualizar_stock(self, event=None):
+        producto_seleccionado = self.entry_producto.get()
+
+        try :
+
+            conn = sqlite3.connect(self.db_name)
+            c = conn.cursor()
+            c.execute('SELECT stock FROM articulos WHERE articulo=?',(producto_seleccionado,))
+            stock = c.fetchone()[0]
+            conn.close()
+
+            self.label_stock.config(text=f"Stock: {stock}")
+
+        except sqlite3.Error as e:
+            print("Error al obtener el stock del producto: ", e)
+        
+    #---------------------------------------------------------------------------------
+    
+    def realizar_pago(self):
+        if not self.tre.get_children():
+            messagebox.showerror("Error", ' No hay producto0s seleccionados para realizar el pago')
+
+        total_venta = sum(float(item[5].replace(" ", "").replace(",", "")) for item in self.productos_seleccionados)
+
+        total_formateado = "{:,.0f}".format(total_venta)
+
+        ventana_pago = tk.Toplevel(self)
+        ventana_pago.title("Realizar pagos")
+        ventana_pago.geometry("400x400+450+80")
+        ventana_pago.config(bg="#C6D9E3")
+        ventana_pago.resizable(False, False)
+        ventana_pago.transient(self.master)
+        ventana_pago.grab_set()
+        ventana_pago.focus_set()
+        ventana_pago.lift
+
+        label_titulo = tk.Label(ventana_pago, text="Realizar pago", font="sans 30 bold",bg="#C6D9E3")
+        label_titulo.place(x=70, y=10)
+
+        label_total = tk.Label(ventana_pago, text=f"Total a pagar: {total_formateado}", font="sans 14 bold",bg="#C6D9E3")
+        label_total.place(x=80, y=100)
+
+        label_monto = tk.Label(ventana_pago, text="Ingrese monto pagado", font="sans 14 bold",bg="#C6D9E3")
+        label_monto.place(x=80, y=160)
+
+        entry_monto = ttk.Entry( ventana_pago, font="sans 14 bold")
+        entry_monto.place(x=80, y=210, width=240, height=40)
+
+        button_confirmar_pago = tk.Button(ventana_pago, text="Confirmar pago", font="sans 14 bold", command= self.procesar_pago(entry_monto.get(), ventana_pago, total_venta))
+        button_confirmar_pago.place(x=80, y=270,width=240,height=40)
+
+    #---------------------------------------------------------------------------------
+
+    def procesar_pago(self, cantidad_pagada, ventana_pago, total_venta):
+        cantidad_pagada = float(cantidad_pagada)
+        cliente = self.entry_cliente.get()
+
+        if cantidad_pagada < total_venta:
+            messagebox.showerror("Error", "La cantidad pagada es insuficiente. ")
+            return
+        cambio = cantidad_pagada - total_venta
+
+        total_formateado = "{:,.0}".format(total_venta)
+
+        mensaje = f"Total: {total_formateado}\nCantidad pagada: {cantidad_pagada:,.0f} \nCambio: {cambio:,.0f}"
+
+        messagebox.showinfo("Pago realizado", mensaje)
+
+        try:
+            conn = sqlite3.connect(self.db_name)
+            c = conn.cursor()
+
+            fecha_actual = datetime.datetime.now().strftime("%Y-%m-%d")
+            hora_actual = datetime.datetime.now().strftime("%H:%M:%S")
+
+            for item in self.productos_seleccionados:
+                factura, cliente, producto, precio, cantidad, total, costo = item
+                c.execute("INSERT INTO ventas (factura, cliente, articulo, precio, cantidad, total, costo, fecha, hora) VALUES (?,?,?,?,?,?,?,?,?)",
+                          (factura, cliente, producto, precio, total.replace(" ", "").replace(",",""), costo * cantidad, fecha_actual, hora_actual))
+                c.execute("UPDATE articulos SET stock = stock - ? WHERE articulo = ?", (cantidad, producto))
+            
+            conn.commit()
+
+        except sqlite3.Error as e:
+            messagebox.showerror("Error",f"Error al registrar la venta : {e}")
+
+        self.numero_factura += 1
+        self.label_numero_factura.config(text=str(self.numero_factura))
+
+        self.productos_seleccionados = []
+        self.limpiar_campos()
+
+        ventana_pago.destroy()
+
+    #---------------------------------------------------------------------------------
+
+    def limpiar_campos(self):
+        for item in self.tre.get_children():
+            self.tre.delete(item)
+        self.label_precio_total.config(text='Precio a pagar: $ 0')
+
+        self.entry_producto.set('')
+        self.entry_cantidad.delete(0, 'end')
+
+    #---------------------------------------------------------------------------------
+
     def widgets(self):
         labelframe  = tk.LabelFrame(self, font='sans 12 bold', bg='#C6D9E3')
         labelframe.place(x=25, y=30, width=1045, height=180)
@@ -24,6 +249,7 @@ class Ventas(tk.Frame):
         label_producto.place(x = 10, y = 70)
         self.entry_producto = ttk.Combobox(labelframe, font="sans 14 bold" )
         self.entry_producto.place(x=120, y=66, width=260, height=40)
+        self.entry_producto.bind('<KeyRelease>', self.filtrar_productos)
           
         label_cantidad = tk.Label(labelframe, text="cantidad: ", font='sans 14 bold', bg='#C6D9E3')
         label_cantidad.place(x=500, y=11)
@@ -32,11 +258,16 @@ class Ventas(tk.Frame):
         
         self.label_stock = tk.Label(labelframe, text="Stock: ", font='sans 14 bold', bg='#C6D9E3')
         self.label_stock.place(x=500, y=70)
+        self.entry_producto.bind("<<ComboboxSelected>>", self.actualizar_stock)
         
         label_factura = tk.Label(labelframe, text="Numero de Factura: ", font='sans 14 bold', bg='#C6D9E3')
         label_factura.place(x=750, y=11)
+
+        self.label_numero_factura = tk.Label(labelframe, text=f"{self.numero_factura}", font='sans 14 bold', bg='#C6D9E3')
+        self.label_numero_factura.config(fg="green") 
+        self.label_numero_factura.place(x=950, y=11)
         
-        boton_agregar = tk.Button(labelframe, text="Agregar Articulo", font='sans 14 bold')
+        boton_agregar = tk.Button(labelframe, text="Agregar Articulo", font='sans 14 bold',command=self.agregar_articulos)
         boton_agregar.place(x=90, y=120, height=40, width=200)
         
         boton_eliminar = tk.Button(labelframe, text="Eliminar Articulo", font='sans 14 bold')
@@ -86,5 +317,6 @@ class Ventas(tk.Frame):
         boton_ver_ventas = tk.Button(self, text="Ver ventas realizadas", font='sans 14 bold')
         boton_ver_ventas.place(x=290, y=550, width=280, height=40)
 
-      
+    #---------------------------------------------------------------------------------
 
+    
