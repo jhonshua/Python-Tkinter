@@ -73,7 +73,7 @@ class Ventas(tk.Frame):
 
     #---------------------------------------------------------------------------------
 
-    def agregar_articulos(self):
+    def agregar_articulos(self): 
         cliente = self.entry_cliente.get()
         producto = self.entry_producto.get()
         cantidad = self.entry_cantidad.get()
@@ -114,7 +114,7 @@ class Ventas(tk.Frame):
             conn.close()
 
             self.entry_producto.set('')
-            self.entry_cantidad.set(0, 'end')
+            self.entry_cantidad.delete(0,'end')
 
         except sqlite3.Error as e:
             print("Error al agregar articulo", e)
@@ -124,7 +124,7 @@ class Ventas(tk.Frame):
     #---------------------------------------------------------------------------------
 
     def calcular_precio_total(self):
-        total_pagar = sum(float(self.tre.item(item)["value"][-1].replace(" ","").replace(",",""))for item in self.tre.get_children())
+        total_pagar = sum(float(str(self.tre.item(item)["values"][-1]).replace("", "").replace(",", ""))for item in self.tre.get_children())
         total_pagar_cop = "{:,.0f}".format(total_pagar)
         self.label_precio_total.config(text=f"Precio a Pagar: $ {total_pagar_cop}")
     
@@ -150,7 +150,7 @@ class Ventas(tk.Frame):
     
     def realizar_pago(self):
         if not self.tre.get_children():
-            messagebox.showerror("Error", ' No hay producto0s seleccionados para realizar el pago')
+            messagebox.showerror("Error", ' No hay producto0s seleccionados para realizar el pago.')
 
         total_venta = sum(float(item[5].replace(" ", "").replace(",", "")) for item in self.productos_seleccionados)
 
@@ -178,7 +178,7 @@ class Ventas(tk.Frame):
         entry_monto = ttk.Entry( ventana_pago, font="sans 14 bold")
         entry_monto.place(x=80, y=210, width=240, height=40)
 
-        button_confirmar_pago = tk.Button(ventana_pago, text="Confirmar pago", font="sans 14 bold", command= self.procesar_pago(entry_monto.get(), ventana_pago, total_venta))
+        button_confirmar_pago = tk.Button(ventana_pago, text="Confirmar pago", font="sans 14 bold", command=lambda: self.procesar_pago(entry_monto.get(), ventana_pago, total_venta))
         button_confirmar_pago.place(x=80, y=270,width=240,height=40)
 
     #---------------------------------------------------------------------------------
@@ -208,7 +208,7 @@ class Ventas(tk.Frame):
             for item in self.productos_seleccionados:
                 factura, cliente, producto, precio, cantidad, total, costo = item
                 c.execute("INSERT INTO ventas (factura, cliente, articulo, precio, cantidad, total, costo, fecha, hora) VALUES (?,?,?,?,?,?,?,?,?)",
-                          (factura, cliente, producto, precio, total.replace(" ", "").replace(",",""), costo * cantidad, fecha_actual, hora_actual))
+                          (factura, cliente, producto, precio, cantidad, total.replace(" ", "").replace(",",""), costo * cantidad, fecha_actual, hora_actual))
                 c.execute("UPDATE articulos SET stock = stock - ? WHERE articulo = ?", (cantidad, producto))
             
             conn.commit()

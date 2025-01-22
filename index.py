@@ -6,4 +6,3 @@ if __name__ == "__main__":
     app.mainloop()
 
 
-    #min 1:37

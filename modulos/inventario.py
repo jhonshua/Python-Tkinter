@@ -427,7 +427,8 @@ class Inventario(tk.Frame):
             
         tk.Button(top, text='Guardar', font="arial 12 bold",command= guardar ).place(x=50, y=260, width=150, height=40 )
         
-        tk.Button(top, text='Cancelar', font="arial 12 bold",command= top.destroy ).place(x=260, y=260, width=150, height=40 )    
-        
+        tk.Button(top, text='Cancelar', font="arial 12 bold",command= top.destroy ).place(x=260, y=260, width=150, height=40 )  
+
+
         
          
