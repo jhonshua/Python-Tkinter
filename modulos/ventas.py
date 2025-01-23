@@ -338,15 +338,15 @@ class Ventas(tk.Frame):
 
                 ventas_filtradas = [
                     venta for venta in ventas
-                    if (str(ventas[0])== factura_a_buscar or not factura_a_buscar) and
+                    if (str(venta[0])== factura_a_buscar or not factura_a_buscar) and
                     (venta[1].lower() == cliente_a_buscar.lower() or not cliente_a_buscar)
                 ]
 
-                for venta in venta in ventas_filtradas:
+                for venta in ventas_filtradas:
                     venta = list(venta)
                     venta[3] = "{:,.0f}".format(venta[3])
                     venta[5] = "{:,.0f}".format(venta[5])
-                    venta[6] = datetime.datetime.strptime(venta[6], "%Y-%m-%d").strptime("%d-%m-%Y")
+                    # venta[6] = datetime.datetime.strptime(venta[6], "%Y-%m-%d").strptime("%d-%m-%Y")
                     tree.insert("", "end", values=venta)
 
             label_ventas_realizadas = tk.Label(ventana_ventas, text="Ventas realizadas", font='sans 14 bold', bg='#C6D9E3')
