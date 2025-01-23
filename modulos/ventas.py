@@ -312,6 +312,112 @@ class Ventas(tk.Frame):
 
     #---------------------------------------------------------------------------------
 
+    def ver_ventas_realizadas(self):
+        try:
+            conn = sqlite3.connect(self.db_name)
+            c = conn.cursor()
+            c.execute("SELECT * FROM ventas")
+            ventas = c.fetchall()
+            conn.close()
+
+            ventana_ventas = tk.Toplevel(self)
+            ventana_ventas.title("Ventas realizadas")
+            ventana_ventas.geometry("1100x650+120+20")
+            ventana_ventas.configure(bg='#C6D9E3')
+            ventana_ventas.resizable(False, False)
+            ventana_ventas.transient(self.master)
+            ventana_ventas.grab_set()
+            ventana_ventas.focus_set()
+            ventana_ventas.lift()
+
+            def filtar_ventas():
+                factura_a_buscar = entry_factura.get()
+                cliente_a_buscar = entry_cliente.get()
+                for item in tree.get_children():
+                    tree.delete(item)
+
+                ventas_filtradas = [
+                    venta for venta in ventas
+                    if (str(ventas[0])== factura_a_buscar or not factura_a_buscar) and
+                    (venta[1].lower() == cliente_a_buscar.lower() or not cliente_a_buscar)
+                ]
+
+                for venta in venta in ventas_filtradas:
+                    venta = list(venta)
+                    venta[3] = "{:,.0f}".format(venta[3])
+                    venta[5] = "{:,.0f}".format(venta[5])
+                    venta[6] = datetime.datetime.strptime(venta[6], "%Y-%m-%d").strptime("%d-%m-%Y")
+                    tree.insert("", "end", values=venta)
+
+            label_ventas_realizadas = tk.Label(ventana_ventas, text="Ventas realizadas", font='sans 14 bold', bg='#C6D9E3')
+            label_ventas_realizadas.place(x=350, y=20)
+
+            filtro_frame = tk.Frame(ventana_ventas, bg='#C6D9E3')
+            filtro_frame.place(x=20, y=60, width=1060, height=60)
+
+            label_factura = tk.Label(filtro_frame, text="Numero de factura", font='sans 14 bold', bg='#C6D9E3')
+            label_factura.place(x=10, y=15)
+
+            entry_factura = ttk.Entry(filtro_frame, font='sans 14 bold' )
+            entry_factura.place(x=200, y=10, width=200, height=40)
+
+            label_cliente = tk.Label(filtro_frame, text="Cliente", font='sans 14 bold', bg='#C6D9E3')
+            label_cliente.place(x=420, y=15)
+
+            entry_cliente= ttk.Entry(filtro_frame, font='sans 14 bold' )
+            entry_cliente.place(x=620, y=10, width=200, height=40)
+
+            btn_filtrar = tk.Button(filtro_frame, text="Filtar",font='sans 14 bold', command=filtar_ventas )
+            btn_filtrar.place(x=840, y=10)
+
+
+            tree_frame = tk.Frame(ventana_ventas, bg="white")
+            tree_frame.place(x=20, y=130, width=1060, height=500)
+
+            scrol_y = ttk.Scrollbar(tree_frame)
+            scrol_y.pack(side=RIGHT, fill=Y)
+
+            scrol_x = ttk.Scrollbar(tree_frame, orient=HORIZONTAL)
+            scrol_x.pack(side=BOTTOM, fill=X)
+
+            tree = ttk.Treeview(tree_frame, columns=("Factura", "Cliente", "Producto", "Precio", " Cantidad", "Total", "Fecha", "Hora" ), show="headings")
+            tree.pack(expand=True, fill=BOTH)
+
+            scrol_y.config(command=tree.yview)
+            scrol_x.config(command=tree.xview)
+
+
+            tree.heading(0, text="Factura")  # Índice 0 para "Factura"
+            tree.heading(1, text="Cliente")  # Índice 1 para "Cliente"
+            tree.heading(2, text="Producto") # Índice 2 para "Producto"
+            tree.heading(3, text="Precio") # Índice 3 para "Precio"
+            tree.heading(4, text="Cantidad") # Índice 4 para "Cantidad"
+            tree.heading(5, text="Total")   # Índice 5 para "Total"
+            tree.heading(6, text="Fecha")   # Índice 6 para "Fecha"
+            tree.heading(7, text="Hora")   # Índice 7 para "Hora"
+
+            tree.column(0, width=60, anchor="center") # Índice 0 para "Factura"
+            tree.column(1, width=120, anchor="center") # Índice 1 para "Cliente"
+            tree.column(2, width=120, anchor="center") # Índice 2 para "Producto"
+            tree.column(3, width=80, anchor="center") # Índice 3 para "Precio"
+            tree.column(4, width=80, anchor="center") # Índice 4 para "Cantidad"
+            tree.column(5, width=80, anchor="center") # Índice 5 para "Total"
+            tree.column(6, width=80, anchor="center") # Índice 6 para "Fecha"
+            tree.column(7, width=80, anchor="center") # Índice 7 para "Hora"
+
+            for venta in ventas : 
+                venta = list(venta)
+                venta[3] = "{:,.0f}".format(venta[3])
+                venta[5] = "{:,.0f}".format(venta[5])
+                # venta[6] = datetime.datetime.strptime(venta[6], "%Y-%m-%d").strptime("%d-%m-%Y")
+                tree.insert("", "end", values=venta)
+
+        except sqlite3.Error as e:
+            messagebox.showerror("Error", "Error al obtener las ventas : ", e)
+
+
+    #---------------------------------------------------------------------------------
+
     def widgets(self):
         labelframe  = tk.LabelFrame(self, font='sans 12 bold', bg='#C6D9E3')
         labelframe.place(x=25, y=30, width=1045, height=180)
@@ -390,7 +496,7 @@ class Ventas(tk.Frame):
         boton_pagar = tk.Button(self, text="Pagar", font='sans 14 bold', command= self.realizar_pago)
         boton_pagar.place(x=70, y=550, width=180, height=40)
 
-        boton_ver_ventas = tk.Button(self, text="Ver ventas realizadas", font='sans 14 bold')
+        boton_ver_ventas = tk.Button(self, text="Ver ventas realizadas", font='sans 14 bold', command=self.ver_ventas_realizadas)
         boton_ver_ventas.place(x=290, y=550, width=280, height=40)
 
     #---------------------------------------------------------------------------------
