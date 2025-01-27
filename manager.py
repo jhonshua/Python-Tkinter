@@ -13,6 +13,7 @@ class Manager(Tk):
         self.title("Mi tienda v1.0")
         self.geometry("1100x650+120+20")
         self.resizable(False, False)
+        self.iconbitmap("media/icons/mi_tienda.ico")
         container = Frame(self)
         container.pack(side=TOP, fill=BOTH, expand=True)
         container.configure(bg="#C6D9E3")
@@ -22,12 +23,11 @@ class Manager(Tk):
             frame = i(container, self)
             self.frames[i] = frame
             
-        # self.show_frame(Login)
-        self.show_frame(Container)
+        self.show_frame(Login)
         
         self.style = ttk.Style()
         self.style.theme_use("clam")
-        
+
     def show_frame(self, container):    
         frame = self.frames[container]   
         frame.tkraise()

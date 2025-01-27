@@ -77,7 +77,7 @@ class Login(tk.Frame):
         #---------------------------------------------------------------------------------
         #cuadro de entrada usuario y pass
         
-        frame1 = tk.Frame(self, bg = '#ffffff', highlightbackground ='black', highlightthickness = 1 )
+        frame1 = tk.Frame(self, bg ='#77BEF0', highlightbackground ='black', highlightthickness = 2 )
         frame1.place(x = 350, y = 50, width = 400, height = 560 )
            
         self.logo_image = Image.open('media/icons/tienda.png')
@@ -88,14 +88,14 @@ class Login(tk.Frame):
         
         #---------------------------------------------------------------------------------
         #input usuario
-        user = ttk.Label(frame1, text = "Nombre de usuario", font = "arial 16 bold", background = "#ffffff")
+        user = ttk.Label(frame1, text = "Nombre de usuario :", font = "arial 16 bold", background = "#77BEF0")
         user.place(x = 100, y = 250)
         self.username = ttk.Entry(frame1, font = "arial 16 bold", justify='center')
         self.username.place(x = 80, y = 290, width = 240, height = 40 )
     
         #---------------------------------------------------------------------------------
         #input pass
-        password = ttk.Label(frame1, text = "Contraseña",font = "arial 16 bold", background = "#ffffff")
+        password = ttk.Label(frame1, text = "Contraseña :",font = "arial 16 bold", background = "#77BEF0")
         password.place(x = 100, y = 340)
         self.pass_word = ttk.Entry(frame1, show='*', font = "arial 16 bold",  justify='center')
         self.pass_word.place(x = 80, y = 380, width = 240, height = 40 )
@@ -103,17 +103,13 @@ class Login(tk.Frame):
         #---------------------------------------------------------------------------------
         #boton aceptar
         
-        # Create a custom style for the buttons (optional)
-        style = ttk.Style()
-        style.configure('my.TButton', font=("arial", 18, "bold"))
-        
         # Login button
-        btn1 = ttk.Button(frame1, text='Iniciar', style='my.TButton', command=self.login)
-        btn1.place(x=80, y=440, width=240, height=40)
+        btn1 = tk.Button(frame1, text='Iniciar', font = "arial 16 bold", command=self.login)
+        btn1.place(x=100, y=440, width=200, height=40)
 
         # Register button
-        btn2 = ttk.Button(frame1, text='Registrar', style='my.TButton', command=self.control2)
-        btn2.place(x=80, y=500, width=240, height=40)
+        btn2 = tk.Button(frame1, text='Registrar', font = "arial 16 bold", command=self.control2)
+        btn2.place(x=100, y=500, width=200, height=40)
 
 #---------------------------------------------------------------------------------           
 class Registro(tk.Frame):

@@ -8,6 +8,7 @@ from reportlab.lib.pagesizes import letter
 from reportlab.lib import colors
 from reportlab.lib.units import inch
 from reportlab.pdfgen import canvas
+from PIL import Image, ImageTk
 
 
 import sys
@@ -39,7 +40,6 @@ class Ventas(tk.Frame):
         except sqlite3.Error as e:
             print("Error obteniendo el numero de la factura: ", e)
             return 1
-
 
     #---------------------------------------------------------------------------------
 
@@ -80,7 +80,6 @@ class Ventas(tk.Frame):
             self.entry_cliente['value'] = ['No se encuentra resultado']
             self.entry_cliente.event_generate('<Down>')
             self.entry_cliente.delete(0, tk.END)
-
 
     #---------------------------------------------------------------------------------
 
@@ -647,7 +646,14 @@ class Ventas(tk.Frame):
         self.label_precio_total = tk.Label(self, text='Precio a Pagar: $ 0', font='sans 18 bold', bg='#C6D9E3' )
         self.label_precio_total.place(x=680, y=550)
 
-        boton_pagar = tk.Button(self, text="Pagar", font='sans 14 bold', command= self.realizar_pago)
+
+        image_pago = Image.open("C:/Users/Julio/Desktop/python/Punto de Venta/media/icons/pago_icon.png")
+        image_pago_resize = image_pago.resize((50, 50))
+        image_pago_tk = ImageTk.PhotoImage(image_pago_resize)
+
+        boton_pagar = tk.Button(self, text="Pagar", font='sans 14 bold', command= self.realizar_pago,bg="#77BEF0", fg="white", borderwidth=2, relief="raised")
+        boton_pagar.config(image=image_pago_tk , compound=LEFT, padx=20)
+        boton_pagar.image = image_pago_tk
         boton_pagar.place(x=70, y=550, width=180, height=40)
 
         boton_ver_ventas = tk.Button(self, text="Ver ventas realizadas", font='sans 14 bold', command=self.ver_ventas_realizadas)
