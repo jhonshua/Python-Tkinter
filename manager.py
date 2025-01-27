@@ -1,6 +1,8 @@
 from tkinter import *
 from tkinter import ttk
 
+from PIL import Image, ImageTk
+
 from modulos.login.login import Login, Registro
 from container import Container
 
@@ -14,6 +16,7 @@ class Manager(Tk):
         self.geometry("1100x650+120+20")
         self.resizable(False, False)
         self.iconbitmap("media/icons/mi_tienda.ico")
+
         container = Frame(self)
         container.pack(side=TOP, fill=BOTH, expand=True)
         container.configure(bg="#C6D9E3")

@@ -1,5 +1,8 @@
 # Caja Registradora Python
 
+![](media/img/foto_1.png)
+
+![](media/img/foto_2.png)
 
 
 ## Descripción
