@@ -1,12 +1,16 @@
+import sqlite3
 from tkinter import *
 import tkinter as tk
 from tkinter import ttk
+from tkinter import ttk, messagebox
+
 
 class Clientes(tk.Frame):
     
     def __init__(self, padre):
         super().__init__(padre)
         self.widgets()
+        self.cargar_registros()
         
     def widgets(self):
         self.labelframe = tk.LabelFrame(self, text="Clientes", font="sans 20 bold", bg="#C6D9E3")
@@ -14,28 +18,28 @@ class Clientes(tk.Frame):
 
         lblnombre = tk.Label(self.labelframe, text="Nombre:", font="sans 14 bold", bg="#C6D9E3")
         lblnombre.place(x=10, y=20)
-        self.lblnombre =  ttk.Entry(self.labelframe,  font="sans 14 bold" )
-        self.lblnombre.place(x=10, y=50, width=220, height=40)
+        self.nombre =  ttk.Entry(self.labelframe,  font="sans 14 bold" )
+        self.nombre.place(x=10, y=50, width=220, height=40)
 
         lblcedula = tk.Label(self.labelframe, text="Cedula:", font="sans 14 bold", bg="#C6D9E3")
         lblcedula.place(x=10,y=100)
-        self.lblcedula =  ttk.Entry(self.labelframe,  font="sans 14 bold" )
-        self.lblcedula.place(x=10, y=130, width=220, height=40)
+        self.cedula =  ttk.Entry(self.labelframe,  font="sans 14 bold" )
+        self.cedula.place(x=10, y=130, width=220, height=40)
 
         lblcelular = tk.Label(self.labelframe, text="Celular:", font="sans 14 bold", bg="#C6D9E3")
         lblcelular.place(x=10,y=180)
-        self.lblcelular =  ttk.Entry(self.labelframe,  font="sans 14 bold" )
-        self.lblcelular.place(x=10, y=210, width=220, height=40 )
+        self.celular =  ttk.Entry(self.labelframe,  font="sans 14 bold" )
+        self.celular.place(x=10, y=210, width=220, height=40 )
 
         lbldireccion = tk.Label(self.labelframe, text="Direccion:",font="sans 14 bold",bg="#C6D9E3")
         lbldireccion.place(x=10,y=260)
-        self.lbldireccion =  ttk.Entry(self.labelframe,  font="sans 14 bold" )
-        self.lbldireccion.place(x=10, y=290, width=220, height=40 )
+        self.direccion =  ttk.Entry(self.labelframe,  font="sans 14 bold" )
+        self.direccion.place(x=10, y=290, width=220, height=40 )
 
         lblcorreo = tk.Label(self.labelframe, text="Correo:", font="sans 14 bold", bg="#C6D9E3")
         lblcorreo.place(x=10,y=340)
-        self.lblcorreo =  ttk.Entry(self.labelframe,  font="sans 14 bold" )
-        self.lblcorreo.place(x=10, y=370, width=220, height=40 )
+        self.correo =  ttk.Entry(self.labelframe,  font="sans 14 bold" )
+        self.correo.place(x=10, y=370, width=220, height=40 )
 
         bt1 = Button(self.labelframe, fg= "Black", text="Ingresar", font="sans 16 bold")
         bt1.place(x=10, y=420, width=220, height=40)
@@ -72,6 +76,55 @@ class Clientes(tk.Frame):
         self.tree.column("Celular", width=120, anchor="center")
         self.tree.column("Direccion", width=200, anchor="center")
         self.tree.column("Correo", width=200, anchor="center")
+
+#--------------------------------------------------------------------------------- 
+
+    def validar_campos(self):
+        if not self.nombre or not self.cedula.get() or not self.celular.get() or not self.direccion.get() or not self.correo.get():
+            messagebox.showerror("Error", "Todos los campos son requeridos. ")
+            return False
+        return True
+
+
+#--------------------------------------------------------------------------------- 
+
+    def registrar(self):
+        if not self.validar_campos():
+            return
+        
+        nombre = self.nombre.get()
+        cedula = self.cedula.get()
+        celular = self.celular.get()
+        direccion = self.direccion.get()
+        correo = self.correo.get()
+
+        try:
+             conn = sqlite3.connect('database.db')
+             cursor = conn.cursor()
+             cursor.execute("INSERT INTO clientes (nombre, cedula, celular, direccion, correo) VALUES (?,?,?,?,?)", 
+                            (nombre, cedula, celular, direccion, correo))
+             conn.commit()
+             conn.close()
+             messagebox.showinfo("Exito", "Cliente registrado correctamente")
+
+        except sqlite3.Error as e :
+            messagebox.showerror("Error", f"No se puedo registar el cliente: {e}")
+
+#--------------------------------------------------------------------------------- 
+
+    def  cargar_registros(self):
+
+        try:
+            conn = sqlite3.connect('database.db')
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM clientes ")
+            rows = cursor.fetchall()
+            for row in rows :
+                self.tree.insert("", "end", values = row) 
+            conn.close()
+        except sqlite3.Error as e:
+             messagebox.showerror("Error", f"No se puedo cargar los registros: {e}")
+
 
 
 

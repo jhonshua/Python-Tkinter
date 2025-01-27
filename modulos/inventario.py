@@ -107,8 +107,8 @@ class Inventario(tk.Frame):
     #---------------------------------------------------------------------------------
     
     def articulos_combobox(self):
-        self.con = sqlite3.connect('database.db')
-        self.cur = self.con.cursor()
+        self.conn = sqlite3.connect('database.db')
+        self.cur = self.conn.cursor()
         self.cur.execute("SELECT articulo FROM articulos")
         self.articulos = [row[0] for row in self.cur.fetchall()]
         self.comboboxbuscar['values'] = self.articulos
