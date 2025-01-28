@@ -19,12 +19,12 @@ Estructura de carpetas propuesta:
 PUNTO DE VENTA
 
 ├── data/                                                
-│   └── env/  # Entorno virtual                                            
+│     └── env/  # Entorno virtual                                            
 ├── media/                             
-│   ├── icons/                                                                      
-│   └── img/                                 
-│       └── img_productos/                                  
-│       └── fondo.png                             
+│     ├── icons/                                                                      
+│     └── img/                                 
+│          └── img_productos/                                  
+│          └── fondo.png                             
 ├── modulos/                                 
 │   ├── login/                                     
 │   ├── clientes.py                                                        
