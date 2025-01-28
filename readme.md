@@ -11,7 +11,7 @@ Este proyecto es una aplicación de caja registradora desarrollada en Python uti
 ## Instalación
 1. **Clonar el repositorio:**
    ```bash
-   git clone [se quitó una URL no válida]
+   git clone [https://github.com/jhonshua/Python-Tkinter.git]
 
 
 Estructura de carpetas propuesta:
