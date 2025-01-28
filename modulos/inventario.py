@@ -183,8 +183,9 @@ class Inventario(tk.Frame):
                 image_path = (r'media/icons/img_default.png')
                 
             try:
+               
                 self.cur.execute("INSERT INTO articulos (articulo, precio, costo, stock, estado, image_path ) VALUES (?, ?, ?, ?, ?, ?)", (articulo, precio, costo, stock, estado, image_path))
-                self.con.commit()
+                self.conn.commit()
                 messagebox.showinfo('Exito','Articulo agregado correctamente')
                 top.destroy()
                 self.cargar_articulos()
