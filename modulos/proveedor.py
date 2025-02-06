@@ -25,20 +25,9 @@ class Proveedor(tk.Frame):
         self.cedula =  ttk.Entry(self.labelframe,  font="sans 14 bold" )
         self.cedula.place(x=10, y=130, width=220, height=40)
 
-        lblcelular = tk.Label(self.labelframe, text="Celular:", font="sans 14 bold", bg="#C6D9E3")
-        lblcelular.place(x=10,y=180)
-        self.celular =  ttk.Entry(self.labelframe,  font="sans 14 bold" )
-        self.celular.place(x=10, y=210, width=220, height=40 )
 
-        lbldireccion = tk.Label(self.labelframe, text="Direccion:",font="sans 14 bold",bg="#C6D9E3")
-        lbldireccion.place(x=10,y=260)
-        self.direccion =  ttk.Entry(self.labelframe,  font="sans 14 bold" )
-        self.direccion.place(x=10, y=290, width=220, height=40 )
-
-        lblcorreo = tk.Label(self.labelframe, text="Correo:", font="sans 14 bold", bg="#C6D9E3")
-        lblcorreo.place(x=10,y=340)
-        self.correo =  ttk.Entry(self.labelframe,  font="sans 14 bold" )
-        self.correo.place(x=10, y=370, width=220, height=40 )
+        bt0 = Button(self.labelframe, fg= "Black", text="Buscar", font="sans 16 bold", )
+        bt0.place(x=10, y=370, width=220, height=40)
 
         bt1 = Button(self.labelframe, fg= "Black", text="Ingresar", font="sans 16 bold", )
         bt1.place(x=10, y=420, width=220, height=40)

@@ -3,6 +3,7 @@ from tkinter import *
 import tkinter as tk
 from tkinter import ttk, messagebox, filedialog
 from PIL import Image, ImageTk
+from modulos.utils.utils import generar_qr_producto
 import threading
 import sys
 import os
@@ -57,33 +58,36 @@ class Inventario(tk.Frame):
         #---------------------------------------------------------------------------------
         
         lblframe_seleccion = LabelFrame(self, text='Seleccion', font="arial 12 bold", bg='#C6D9E3')
-        lblframe_seleccion.place(x=10, y=95, width=280, height=190)
+        lblframe_seleccion.place(x=10, y=95, width=280, height=240)
         
         self.label1 = tk.Label(lblframe_seleccion, text='Articulo: ',font="arial 12 bold", bg='#C6D9E3', wraplength=300)
         self.label1.place(x=5,y=5)
         
-        self.label2 = tk.Label(lblframe_seleccion, text='Precio: ',font="arial 12 bold", bg='#C6D9E3')
+        self.label2 = tk.Label(lblframe_seleccion, text='Precio : ',font="arial 12 bold", bg='#C6D9E3')
         self.label2.place(x=5,y=40)
         
-        self.label3 = tk.Label(lblframe_seleccion, text='Costo: ',font="arial 12 bold", bg='#C6D9E3')
-        self.label3.place(x=5,y=70)
+        # self.label3 = tk.Label(lblframe_seleccion, text='Costo-proveedor: ',font="arial 12 bold", bg='#C6D9E3')
+        # self.label3.place(x=5,y=70)
         
         self.label4 = tk.Label(lblframe_seleccion, text='Stock: ',font="arial 12 bold", bg='#C6D9E3')
-        self.label4.place(x=5,y=100)
+        self.label4.place(x=5,y=70)
         
         self.label5 = tk.Label(lblframe_seleccion, text='Estado: ',font="arial 12 bold", bg='#C6D9E3')
-        self.label5.place(x=5,y=130)
+        self.label5.place(x=5,y=100)
         
         #---------------------------------------------------------------------------------
          
         lblframe_botones = LabelFrame(self, text="Opciones", font="arial 14 bold", bg='#C6D9E3')
-        lblframe_botones.place(x=10, y=290, width=280, height=300)
+        lblframe_botones.place(x=10, y=350, width=280, height=250)
         
         btn1 = tk.Button(lblframe_botones, text="Agregar", font="arial 14 bold", command=self.agregar_articulo )
-        btn1.place(x=20, y=20, width=180, height=40)
+        btn1.place(x=40, y=20, width=180, height=40)
         
         btn2 = tk.Button(lblframe_botones, text="Editar", font="arial 14 bold", command= self.editar_articulo)
-        btn2.place(x=20, y=80, width=180, height=40)
+        btn2.place(x=40, y=80, width=180, height=40)
+
+        btn3 = tk.Button(lblframe_botones, text="Imprimir etiqueta", font="arial 14 bold", command= generar_qr_producto)
+        btn3.place(x=40, y=140, width=180, height=40)
     
     #---------------------------------------------------------------------------------
         
@@ -270,8 +274,8 @@ class Inventario(tk.Frame):
                 articulo, precio, costo, stock, estado = resultado
                 
                 self.label1.config(text=f'Articulo: {articulo}')             
-                self.label2.config(text=f'Precio: {precio} usd')   
-                self.label3.config(text=f'Costo: {costo} usd')   
+                self.label2.config(text=f'Precio: {precio}$ usd')   
+                # self.label3.config(text=f'Costo-proveedor: {costo}$ usd')   
                 self.label4.config(text=f'Stock: {stock}')  
                  
                 self.label5.config(text=f'Estado: {estado}') 
@@ -284,7 +288,7 @@ class Inventario(tk.Frame):
             else :
                 self.label1.config(text="Articulo: No encontrado")
                 self.label2.config(text="Precio: N/A")
-                self.label3.config(text="Costo: N/A")
+                # self.label3.config(text="Costo: N/A")
                 self.label4.config(text="Stock: N/A")
                 self.label5.config(text="Estado: N/A")
             
@@ -349,29 +353,34 @@ class Inventario(tk.Frame):
         print(resultado)
         articulo, precio, costo, stock, estado, image_path = resultado[0]
         
-        tk.Label(top, text="Articulo", font="arial 12 bold", bg='#C6D9E3').place(x=20, y=20, width=80, height=25)
+        tk.Label(top, text="Articulo", font="arial 12 bold", bg='#C6D9E3').place(x=20, y=20, width=130, height=25)
         entry_articulo = ttk.Entry(top, font='arial 12 bold')
-        entry_articulo.place(x=120, y=20, width=250, height=30)
+        entry_articulo.place(x=160, y=20, width=250, height=30)
         entry_articulo.insert(0, articulo)
+        entry_articulo.config(justify="center")
             
-        tk.Label(top, text="Precio", font="arial 12 bold", bg='#C6D9E3').place(x=20, y=60, width=80, height=25)
+        tk.Label(top, text="Precio venta", font="arial 12 bold", bg='#C6D9E3').place(x=20, y=60, width=130, height=25)
         entry_precio = ttk.Entry(top, font='arial 12 bold')
-        entry_precio.place(x=120, y=60, width=250, height=30)
-        entry_precio.insert(0, precio)
+        entry_precio.place(x=160, y=60, width=250, height=30)
+        entry_precio.insert(0,str(precio) + " $")
+        entry_precio.config(justify="center")
         
-        tk.Label(top, text="Costo", font="arial 12 bold", bg='#C6D9E3').place(x=20, y=100, width=80, height=25)
+        tk.Label(top, text="Costo proveedor", font="arial 12 bold", bg='#C6D9E3').place(x=20, y=100, width=130, height=25)
         entry_costo = ttk.Entry(top, font='arial 12 bold')
-        entry_costo.place(x=120, y=100, width=250, height=30)
-        entry_costo.insert(0, costo)
+        entry_costo.place(x=160, y=100, width=250, height=30)
+        entry_costo.insert(0, str(costo) + " $")
+        entry_costo.config(justify="center")
         
-        tk.Label(top, text="Stock", font="arial 12 bold", bg='#C6D9E3').place(x=20, y=140, width=80, height=25)
+        tk.Label(top, text="Stock", font="arial 12 bold", bg='#C6D9E3').place(x=20, y=140, width=130, height=25)
         entry_stock = ttk.Entry(top, font='arial 12 bold')
-        entry_stock.place(x=120, y=140, width=250, height=30)
-        entry_stock.insert(0, stock)
+        entry_stock.place(x=160, y=140, width=250, height=30)
+        entry_stock.config(justify="center")
+        entry_stock.insert(0, str(stock) + " unidades disponibles" )
         
-        tk.Label(top, text="Estado", font="arial 12 bold", bg='#C6D9E3').place(x=20, y=200, width=80, height=25)
+        tk.Label(top, text="Estado", font="arial 12 bold", bg='#C6D9E3').place(x=20, y=180, width=130, height=25)
         entry_estado = ttk.Entry(top, font='arial 12 bold')
-        entry_estado.place(x=120, y=180, width=250, height=30)
+        entry_estado.place(x=160, y=180, width=250, height=30)
+        entry_estado.config(justify="center")
         entry_estado.insert(0, estado)
         
         self.frameimg = tk.Frame(top, bg='#ffffff', highlightbackground="gray", highlightthickness=1 )
@@ -417,7 +426,7 @@ class Inventario(tk.Frame):
                 
             # try:
             self.cur.execute("UPDATE articulos SET articulo=?, precio=?, costo=?, stock=?,image_path=?, estado=? WHERE articulo=?", (nuevo_articulo, precio, costo, stock, image_path, estado, selcted_item))
-            self.con.commit()
+            self.conn.commit()
             self.articulos_combobox()
             self.after(0,lambda: self.cargar_articulos(filtro=nuevo_articulo))
             top.destroy()
