@@ -372,7 +372,7 @@ class Ventas(tk.Frame):
 
             ventana_ventas = tk.Toplevel(self)
             ventana_ventas.title("Ventas realizadas")
-            ventana_ventas.geometry("1100x650+120+20")
+            ventana_ventas.geometry("1100x770+120+20")
             ventana_ventas.configure(bg='#C6D9E3')
             ventana_ventas.resizable(False, False)
             ventana_ventas.transient(self.master)
@@ -400,29 +400,41 @@ class Ventas(tk.Frame):
                     tree.insert("", "end", values=venta)
 
             label_ventas_realizadas = tk.Label(ventana_ventas, text="Ventas realizadas", font='sans 14 bold', bg='#C6D9E3')
-            label_ventas_realizadas.place(x=350, y=20)
+            label_ventas_realizadas.place(x=450, y=20)
 
             filtro_frame = tk.Frame(ventana_ventas, bg='#C6D9E3')
-            filtro_frame.place(x=20, y=60, width=1060, height=60)
+            filtro_frame.place(x=20, y=60, width=1060, height=140)
 
-            label_factura = tk.Label(filtro_frame, text="Numero de factura", font='sans 14 bold', bg='#C6D9E3')
+            label_factura = tk.Label(filtro_frame, text="Numero de factura:", font='sans 14 bold', bg='#C6D9E3')
             label_factura.place(x=10, y=15)
 
             entry_factura = ttk.Entry(filtro_frame, font='sans 14 bold' )
             entry_factura.place(x=200, y=10, width=200, height=40)
 
-            label_cliente = tk.Label(filtro_frame, text="Cliente", font='sans 14 bold', bg='#C6D9E3')
-            label_cliente.place(x=420, y=15)
+            label_cliente = tk.Label(filtro_frame, text="Cliente:", font='sans 14 bold', bg='#C6D9E3')
+            label_cliente.place(x=540, y=15)
 
             entry_cliente= ttk.Entry(filtro_frame, font='sans 14 bold' )
             entry_cliente.place(x=620, y=10, width=200, height=40)
 
+            label_fecha_start = tk.Label(filtro_frame, text="Fecha start :", font='sans 14 bold', bg='#C6D9E3')
+            label_fecha_start .place(x=30, y=70)
+
+            entry_fecha_start= ttk.Entry(filtro_frame, font='sans 14 bold' )
+            entry_fecha_start.place(x=200, y=70, width=200, height=40)
+
+            label_Fecha_end= tk.Label(filtro_frame, text="fecha end :", font='sans 14 bold', bg='#C6D9E3')
+            label_Fecha_end.place(x=510, y=70)
+
+            entry_Fecha_end= ttk.Entry(filtro_frame, font='sans 14 bold' )
+            entry_Fecha_end.place(x=620, y=70, width=200, height=40)
+
             btn_filtrar = tk.Button(filtro_frame, text="Filtar",font='sans 14 bold', command=filtar_ventas )
-            btn_filtrar.place(x=840, y=10)
+            btn_filtrar.place(x=860, y=40, width=150, height=40)
 
 
             tree_frame = tk.Frame(ventana_ventas, bg="white")
-            tree_frame.place(x=20, y=130, width=1060, height=500)
+            tree_frame.place(x=20, y=240, width=1060, height=500)
 
             scrol_y = ttk.Scrollbar(tree_frame)
             scrol_y.pack(side=RIGHT, fill=Y)
@@ -643,7 +655,7 @@ class Ventas(tk.Frame):
         self.tre.column("Cantidad", width=120, anchor="center")
         self.tre.column("Total", width=150, anchor="center")
 
-        self.label_precio_total = tk.Label(self, text='Precio a Pagar: $ 0', font='sans 18 bold', bg='#C6D9E3' )
+        self.label_precio_total = tk.Label(self, text='Precio a Pagar: $ 0  -  Bs 0', font='sans 18 bold', bg='#C6D9E3' )
         self.label_precio_total.place(x=680, y=550)
 
 
