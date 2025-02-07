@@ -57,6 +57,17 @@ def crear_base_de_datos():
             )
         ''')
 
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS proveedores (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                empresa TEXT NOT NULL,
+                rif TEXT UNIQUE NOT NULL,  -- UNIQUE para evitar RIFs repetidos
+                celular TEXT,
+                direccion TEXT,
+                correo TEXT
+            )
+        ''')
+
         conn.commit()
         conn.close()
         print("Base de datos y tablas creadas (o ya existentes).")

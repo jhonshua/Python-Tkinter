@@ -13,7 +13,7 @@ class Manager(Tk):
     def __init__(self, *args, **kwargs):
         super(). __init__(*args, **kwargs)
         self.title("Mi tienda v1.0")
-        self.geometry("1100x650+120+20")
+        self.geometry("1200x800+120+20")
         self.resizable(False, False)
         self.iconbitmap("media/icons/mi_tienda.ico")
 
@@ -27,7 +27,7 @@ class Manager(Tk):
             self.frames[i] = frame
             
         # self.show_frame(Login)
-        self.show_frame(Container)
+        self.show_frame(Login)
         
         self.style = ttk.Style()
         self.style.theme_use("clam")
