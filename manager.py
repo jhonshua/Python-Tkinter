@@ -1,6 +1,6 @@
 from tkinter import *
 from tkinter import ttk
-
+from data.models import crear_base_de_datos
 from PIL import Image, ImageTk
 
 from modulos.login.login import Login, Registro
@@ -31,6 +31,8 @@ class Manager(Tk):
         
         self.style = ttk.Style()
         self.style.theme_use("clam")
+
+        crear_base_de_datos()
 
     def show_frame(self, container):    
         frame = self.frames[container]   
