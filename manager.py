@@ -13,13 +13,13 @@ class Manager(Tk):
     def __init__(self, *args, **kwargs):
         super(). __init__(*args, **kwargs)
         self.title("Mi tienda v1.0")
-        self.geometry("1200x800+120+20")
+        self.geometry("1200x800+420+20")
         self.resizable(False, False)
         self.iconbitmap("media/icons/mi_tienda.ico")
 
         container = Frame(self)
         container.pack(side=TOP, fill=BOTH, expand=True)
-        container.configure(bg="#C6D9E3")
+        container.configure(bg="blue", width=1200, height=800)
         
         self.frames = {}
         for i in (Login, Registro, Container):
@@ -27,7 +27,7 @@ class Manager(Tk):
             self.frames[i] = frame
             
         # self.show_frame(Login)
-        self.show_frame(Login)
+        self.show_frame(Container)
         
         self.style = ttk.Style()
         self.style.theme_use("clam")

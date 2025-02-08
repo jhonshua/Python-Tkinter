@@ -584,7 +584,7 @@ class Ventas(tk.Frame):
 
     def widgets(self):
         labelframe  = tk.LabelFrame(self, font='sans 12 bold', bg='#C6D9E3')
-        labelframe.place(x=25, y=30, width=1045, height=180)
+        labelframe.place(x=25, y=30, width=1150, height=180)
         
         label_Cliente = tk.Label(labelframe, text="Cliente: ", font='sans 14 bold', bg='#C6D9E3')
         label_Cliente.place(x=10, y=11)

@@ -69,10 +69,10 @@ class Login(tk.Frame):
         fondo.place(x = 0, y = 0, width = 1100, height = 650)
         
         self.bg_image = Image.open('media/img/fondo.png')
-        self.bg_image = self.bg_image.resize((1100, 650))
+        self.bg_image = self.bg_image.resize((1200, 800))
         self.bg_image = ImageTk.PhotoImage(self.bg_image)
         self.bg_label = ttk.Label(fondo, image = self.bg_image)
-        self.bg_label.place(x = 0, y = 0, width = 1100, height = 650 )
+        self.bg_label.place(x = 0, y = 0, width = 1200, height = 800 )
         
         #---------------------------------------------------------------------------------
         #cuadro de entrada usuario y pass
