@@ -378,10 +378,13 @@ class Inventario(tk.Frame):
         entry_stock.insert(0, str(stock) + " unidades disponibles" )
         
         tk.Label(top, text="Estado", font="arial 12 bold", bg='#C6D9E3').place(x=20, y=180, width=130, height=25)
-        entry_estado = ttk.Entry(top, font='arial 12 bold')
-        entry_estado.place(x=160, y=180, width=250, height=30)
-        entry_estado.config(justify="center")
-        entry_estado.insert(0, estado)
+        
+        combo_estado = ttk.Combobox(top, textvariable=estado, values=["Activo", "Inactivo"], font='arial 12 bold', state="readonly") # Solo permite seleccionar, no escribir
+        combo_estado.place(x=160, y=180, width=250, height=30)
+        combo_estado.current(0)
+
+        combo_estado.config(justify="center")
+        combo_estado.insert(0, estado)
         
         self.frameimg = tk.Frame(top, bg='#ffffff', highlightbackground="gray", highlightthickness=1 )
         self.frameimg.place(x=440, y=30, width=200, height=200)
@@ -439,6 +442,6 @@ class Inventario(tk.Frame):
         
         tk.Button(top, text='Cancelar', font="arial 12 bold",command= top.destroy ).place(x=260, y=260, width=150, height=40 )  
 
-
+        tk.Button(top,bg="red",fg="white", text='Eliminar articulo', font="arial 12 bold",).place(x=260, y=330, width=150, height=40 )  
         
          
