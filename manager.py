@@ -19,7 +19,7 @@ class Manager(Tk):
 
         container = Frame(self)
         container.pack(side=TOP, fill=BOTH, expand=True)
-        container.configure(bg="blue", width=1200, height=800)
+        container.configure( width=1200, height=800)
         
         self.frames = {}
         for i in (Login, Registro, Container):

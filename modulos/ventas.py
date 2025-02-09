@@ -627,7 +627,7 @@ class Ventas(tk.Frame):
         boton_limpiar.place(x=750, y=120, height=40, width=200)
         
         treFrame = tk.Frame(self, background='white')
-        treFrame.place(x=70, y=220, width=980,height=300)
+        treFrame.place(x=110, y=220, width=980,height=350)
         
         scrol_y = ttk.Scrollbar(treFrame)
         scrol_y.pack(side=RIGHT, fill=X)
@@ -655,8 +655,15 @@ class Ventas(tk.Frame):
         self.tre.column("Cantidad", width=120, anchor="center")
         self.tre.column("Total", width=150, anchor="center")
 
+        
+        self.label_sub_total = tk.Label(self, text='Sub - Total : $ 0  -  Bs 0', font='sans 18 bold', bg='#C6D9E3' )
+        self.label_sub_total.place(x=740, y=610)
+
+        self.label_iva = tk.Label(self, text='IVA: Bs 0', font='sans 18 bold', bg='#C6D9E3' )
+        self.label_iva.place(x=740, y=650)
+
         self.label_precio_total = tk.Label(self, text='Precio a Pagar: $ 0  -  Bs 0', font='sans 18 bold', bg='#C6D9E3' )
-        self.label_precio_total.place(x=680, y=550)
+        self.label_precio_total.place(x=740, y=690)
 
 
         image_pago = Image.open("C:/Users/Julio/Desktop/python/Punto de Venta/media/icons/pago_icon.png")
@@ -666,10 +673,10 @@ class Ventas(tk.Frame):
         boton_pagar = tk.Button(self, text="Pagar", font='sans 14 bold', command= self.realizar_pago,bg="#77BEF0", fg="white", borderwidth=2, relief="raised")
         boton_pagar.config(image=image_pago_tk , compound=LEFT, padx=20)
         boton_pagar.image = image_pago_tk
-        boton_pagar.place(x=70, y=550, width=180, height=40)
+        boton_pagar.place(x=70, y=650, width=180, height=40)
 
         boton_ver_ventas = tk.Button(self, text="Ver ventas realizadas", font='sans 14 bold', command=self.ver_ventas_realizadas)
-        boton_ver_ventas.place(x=290, y=550, width=280, height=40)
+        boton_ver_ventas.place(x=290, y=650, width=280, height=40)
 
     #---------------------------------------------------------------------------------
 
