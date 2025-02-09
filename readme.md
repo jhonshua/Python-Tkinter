@@ -1,8 +1,16 @@
 # Caja Registradora Python
 
-![](media/img/foto_1.png)
+![](media/img/img0.png)
 
-![](media/img/foto_2.png)
+![](media/img/img1.png)
+
+![](media/img/img2.png)
+
+![](media/img/img3.png)
+
+![](media/img/img4.png)
+
+![](media/img/img5.png)
 
 
 ## Descripción

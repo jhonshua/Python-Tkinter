@@ -27,7 +27,7 @@ class Inventario(tk.Frame):
         #---------------------------------------------------------------------------------
         
         canvas_articulos = tk.LabelFrame(self, text="Articulos", font='arial 15 bold', bg='#C6D9E3')
-        canvas_articulos.place(x=300, y=10, width=780, height=580)
+        canvas_articulos.place(x=300, y=10, width=895, height=740)
         
         self.canvas = tk.Canvas(canvas_articulos, bg='#C6D9E3')
         self.scrollbar = tk.Scrollbar(canvas_articulos, orient='vertical', command = self.canvas.yview)
@@ -252,7 +252,7 @@ class Inventario(tk.Frame):
         precio_label.pack(side="bottom", fill='x')
         
         self.column += 1
-        if self.column > 3:
+        if self.column > 4:
             self.column = 0 
             self.row += 1
     

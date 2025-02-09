@@ -36,7 +36,7 @@ class Proveedor(tk.Frame):
         bt2.place(x=10, y=470, width=220, height=40)
 
         treFrame = Frame(self, bg="white")
-        treFrame.place(x=280, y=20, width=800, height=560)
+        treFrame.place(x=280, y=20, width=850, height=720)
 
         Scrollbar_y = ttk.Scrollbar(treFrame)
         Scrollbar_y.pack(side = RIGHT, fill = Y)
