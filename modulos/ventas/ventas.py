@@ -185,7 +185,7 @@ class Ventas(tk.Frame):
     
     def realizar_pago(self):
         if not self.tre.get_children():
-            messagebox.showerror("Error", ' No hay producto0s seleccionados para realizar el pago.')
+            messagebox.showerror("Error", ' No hay productos seleccionados para realizar el pago.')
 
         total_venta = sum(float(item[5].replace(" ", "").replace(",", "")) for item in self.productos_seleccionados)
 
@@ -207,7 +207,7 @@ class Ventas(tk.Frame):
         label_total = tk.Label(ventana_pago, text=f"Total a pagar: {total_formateado}", font="sans 14 bold",bg="#C6D9E3")
         label_total.place(x=80, y=100)
 
-        label_monto = tk.Label(ventana_pago, text="Ingrese monto pagado", font="sans 14 bold",bg="#C6D9E3")
+        label_monto = tk.Label(ventana_pago, text="Ingrese monto pagado", font="sans 14 bold", bg="#C6D9E3")
         label_monto.place(x=80, y=160)
 
         entry_monto = ttk.Entry( ventana_pago, font="sans 14 bold")
@@ -228,9 +228,9 @@ class Ventas(tk.Frame):
         
         cambio = cantidad_pagada - total_venta
 
-        total_formateado = "{:,.0}".format(total_venta)
+        total_formateado = f"{total_venta:,.0f}"
 
-        mensaje = f"Total: {total_formateado}\nCantidad pagada: {cantidad_pagada:,.0f} \nCambio: {cambio:,.0f}"
+        mensaje = f"Total: {total_formateado} Us$\nCantidad pagada: {cantidad_pagada:,.0f}Us$\nCambio: {cambio:,.0f} Us$"
 
         messagebox.showinfo("Pago realizado", mensaje)
 

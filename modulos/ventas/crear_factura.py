@@ -11,8 +11,6 @@ import os
 from modulos.ventas.obtener_numero_factura import obtener_numero_factura_actual
 
 
-
-
 def generar_factura(total_venta, cliente):
         
     numero_factura = obtener_numero_factura_actual()
@@ -27,14 +25,13 @@ def generar_factura(total_venta, cliente):
 
             factura_nombre = f"Factura_{numero_factura}.pdf"
             factura_path = os.path.join(factura_path, factura_nombre)
-
             c = canvas.Canvas(factura_path)
             # ... Resto del código para crear el PDF
 
         except Exception as e:
                    messagebox.showerror("Error", f"No se pudo generar la factura: {e}")
 
-        #-------------------------------------------------------------------------   
+   #---------------------------------------------------------------------------
 
         empresa_nombre = "Mini Market Version 1.0"
         empresa_direccion = "Calle 1 # 1a - 01, Neiva - Hula"
@@ -118,3 +115,21 @@ def generar_factura(total_venta, cliente):
         messagebox.showerror("Error", f"No se pudo generar la factura: {e}")
 
     #---------------------------------------------------------------------------------
+
+
+# from reportlab.pdfgen import canvas
+# from reportlab.lib.pagesizes import mm
+
+# # Define el tamaño de página personalizado
+# width = 57 * mm
+# height = 100 * mm  # Ajusta la altura según tus necesidades
+# pagesize = (width, height)
+
+# # Crea el objeto canvas
+# c = canvas.Canvas("factura.pdf", pagesize=pagesize)
+
+# # Añade contenido a la factura
+# c.drawString(10, height - 10, "Tu texto aquí")
+
+# # Guarda el PDF
+# c.save()
