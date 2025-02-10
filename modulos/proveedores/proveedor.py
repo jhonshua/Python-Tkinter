@@ -3,6 +3,7 @@ from tkinter import *
 import tkinter as tk
 from tkinter import ttk, messagebox
 from tkinter import ttk
+from typing import Self
 
 class Proveedor(tk.Frame):
     
@@ -29,10 +30,10 @@ class Proveedor(tk.Frame):
         bt0 = Button(self.labelframe, fg= "Black", text="Buscar", font="sans 16 bold", )
         bt0.place(x=10, y=370, width=220, height=40)
 
-        bt1 = Button(self.labelframe, fg= "Black", text="Ingresar", font="sans 16 bold", )
+        bt1 = Button(self.labelframe, command=self.registrar_ventana_open, fg= "Black", text="Ingresar", font="sans 16 bold", )
         bt1.place(x=10, y=420, width=220, height=40)
 
-        bt2 = Button(self.labelframe, fg= "Black", text="Modificar", font="sans 16 bold",command=self.modificar)
+        bt2 = Button(self.labelframe, fg="Black", text="Modificar", font="sans 16 bold",command=self.modificar)
         bt2.place(x=10, y=470, width=220, height=40)
 
         treFrame = Frame(self, bg="white")
@@ -65,7 +66,7 @@ class Proveedor(tk.Frame):
         self.tree.column("Direccion", width=200, anchor="center")
         self.tree.column("Correo", width=200, anchor="center")
 
-#--------------------------------------------------------------------------------- 
+    #--------------------------------------------------------------------------------- 
 
     def  cargar_registros(self):
 
@@ -80,14 +81,13 @@ class Proveedor(tk.Frame):
         except sqlite3.Error as e:
              messagebox.showerror("Error", f"No se puedo cargar los registros: {e}")
 
-#--------------------------------------------------------------------------------- 
+    #--------------------------------------------------------------------------------- 
 
     def limpiar_treeview(self):
         for item in self.tree.get_children():
             self.tree.delete(item)
 
-#--------------------------------------------------------------------------------- 
-
+    #---------------------------------------------------------------------------------
 
     def modificar(self):
         if not self.tree.selection():
@@ -113,41 +113,42 @@ class Proveedor(tk.Frame):
         top_modificar.lift()
 
         tk.Label(top_modificar, text="Empresa: ", font="sans 14 bold", bg="#C6D9E3").grid(row=0, column=0, padx=10, pady=5)
-        empresa_nuevo = tk.Entry(top_modificar, font="sans 14 bold")
-        empresa_nuevo.insert(0, empresa_actual)
-        empresa_nuevo.grid(row=0, column=1, padx=10, pady=5)
+        empresa_modificar = tk.Entry(top_modificar, font="sans 14 bold")
+        empresa_modificar.insert(0, empresa_actual)
+        empresa_modificar.grid(row=0, column=1, padx=10, pady=5)
 
         tk.Label(top_modificar, text="RIF: ", font="sans 14 bold", bg="#C6D9E3").grid(row=1, column=0, padx=10, pady=5)
-        rif_nuevo = tk.Entry(top_modificar, font="sans 14 bold")
-        rif_nuevo.insert(0, rif_actual)
-        rif_nuevo.grid(row=1, column=1, padx=10, pady=5)
+        rif_modificar = tk.Entry(top_modificar, font="sans 14 bold")
+        rif_modificar.insert(0, rif_actual)
+        rif_modificar.grid(row=1, column=1, padx=10, pady=5)
 
         tk.Label(top_modificar, text="Celular: ", font="sans 14 bold", bg="#C6D9E3").grid(row=2, column=0, padx=10, pady=5)
-        celular_nuevo = tk.Entry(top_modificar, font="sans 14 bold")
-        celular_nuevo.insert(0, celular_actual)
-        celular_nuevo.grid(row=2, column=1, padx=10, pady=5)
+        celular_modificar = tk.Entry(top_modificar, font="sans 14 bold")
+        celular_modificar.insert(0, celular_actual)
+        celular_modificar.grid(row=2, column=1, padx=10, pady=5)
 
         tk.Label(top_modificar, text="Direccion: ", font="sans 14 bold", bg="#C6D9E3").grid(row=3, column=0, padx=10, pady=5)
-        direccion_nuevo = tk.Entry(top_modificar, font="sans 14 bold")
-        direccion_nuevo.insert(0, direccion_actual)
-        direccion_nuevo.grid(row=3, column=1, padx=10, pady=5)
+        direccion_modificar = tk.Entry(top_modificar, font="sans 14 bold")
+        direccion_modificar.insert(0, direccion_actual)
+        direccion_modificar.grid(row=3, column=1, padx=10, pady=5)
 
         tk.Label(top_modificar, text="Correo: ", font="sans 14 bold", bg="#C6D9E3").grid(row=4, column=0, padx=10, pady=5)
-        correo_nuevo = tk.Entry(top_modificar, font="sans 14 bold")
-        correo_nuevo.insert(0, correo_actual)
-        correo_nuevo.grid(row=4, column=1, padx=10, pady=5)
+        correo_modificar = tk.Entry(top_modificar, font="sans 14 bold")
+        correo_modificar.insert(0, correo_actual)
+        correo_modificar.grid(row=4, column=1, padx=10, pady=5)
+        
 
         def guardar_modificado():
-            nuevo_empresa= empresa_nuevo.get()
-            nuevo_cedula = rif_nuevo.get()
-            nuevo_celular = celular_nuevo.get()
-            nuevo_direccion = direccion_nuevo.get()
-            nuevo_correo =  correo_nuevo.get()
+            modificar_empresa= empresa_modificar.get()
+            modificar_cedula = rif_modificar.get()
+            modificar_celular = celular_modificar.get()
+            modificar_direccion = direccion_modificar.get()
+            modificar_correo =  correo_modificar.get()
 
             try:
                 conn = sqlite3.connect('database.db')
                 cursor = conn.cursor()
-                cursor.execute("""UPDATE proveedores SET empresa = ?, rif = ?, celular = ?, direccion = ?, correo = ? WHERE id = ? """, ( nuevo_empresa, nuevo_cedula,nuevo_celular, nuevo_direccion, nuevo_correo, id_proveedor))
+                cursor.execute("""UPDATE proveedores SET empresa = ?, rif = ?, celular = ?, direccion = ?, correo = ? WHERE id = ? """, ( modificar_empresa, modificar_cedula,modificar_celular, modificar_direccion, modificar_correo, id_proveedor))
                 conn.commit()
                 conn.close()
                 messagebox.showinfo("Exito", "Cliente modificado correctamente")
@@ -164,5 +165,66 @@ class Proveedor(tk.Frame):
         btn_guardar = tk.Button(top_modificar, fg="white", bg="red", text="Eliminar proveedor" , font="sans 14 bold")
         btn_guardar.grid(row=6, column=1, columnspan=2, pady=20)
 
-#--------------------------------------------------------------------------------- 
+  
+    #--------------------------------------------------------------------------------- 
+
+    def registrar_empresa(self, empresa, rif, celular, direccion, correo, top_crear):
+        
+        if not empresa or not rif or not celular or not direccion or not correo:
+            messagebox.showerror("Error", "Todos los campos son requeridos.")
+            return False
+
+        try:
+            conn = sqlite3.connect('database.db')
+            cursor = conn.cursor()
+            cursor.execute("INSERT INTO proveedores (empresa, rif, celular, direccion, correo) VALUES (?,?,?,?,?)", (empresa, rif, celular, direccion, correo))
+            conn.commit()
+            conn.close()
+            messagebox.showinfo("Exito", "Cliente registrado correctamente")
+            self.limpiar_treeview()
+            self.cargar_registros()
+            top_crear.destroy()
+
+        except sqlite3.Error as e:
+            messagebox.showerror("Error", f"No se puedo registar el cliente: {e}")
+
+    
+    def registrar_ventana_open(self):
+
+        top_crear = Toplevel(self)
+        top_crear.title("crear proveedor")
+        top_crear.geometry("500x400+400+50")
+        top_crear.config(bg="#C6D9E3")
+        top_crear.resizable(False, False)
+        top_crear.grab_set()
+        top_crear.focus_set()
+        top_crear.lift()
+
+        tk.Label(top_crear, text="Empresa: ", font="sans 14 bold", bg="#C6D9E3").grid(row=0, column=0, padx=10, pady=5)
+        empresa_nuevo = tk.Entry(top_crear, font="sans 14 bold")
+        empresa_nuevo.grid(row=0, column=1, padx=10, pady=5)
+
+        tk.Label(top_crear, text="RIF: ", font="sans 14 bold", bg="#C6D9E3").grid(row=1, column=0, padx=10, pady=5)
+        rif_nuevo = tk.Entry(top_crear, font="sans 14 bold")
+        rif_nuevo.grid(row=1, column=1, padx=10, pady=5)
+
+        tk.Label(top_crear, text="Celular: ", font="sans 14 bold", bg="#C6D9E3").grid(row=2, column=0, padx=10, pady=5)
+        celular_nuevo = tk.Entry(top_crear, font="sans 14 bold")
+        celular_nuevo.grid(row=2, column=1, padx=10, pady=5)
+
+        tk.Label(top_crear, text="Direccion: ", font="sans 14 bold", bg="#C6D9E3").grid(row=3, column=0, padx=10, pady=5)
+        direccion_nuevo = tk.Entry(top_crear, font="sans 14 bold")
+        direccion_nuevo.grid(row=3, column=1, padx=10, pady=5)
+
+        tk.Label(top_crear, text="Correo: ", font="sans 14 bold", bg="#C6D9E3").grid(row=4, column=0, padx=10, pady=5)
+        correo_nuevo = tk.Entry(top_crear, font="sans 14 bold")
+        correo_nuevo.grid(row=4, column=1, padx=10, pady=5)
+
+        btn_guardar = tk.Button(top_crear, 
+                           command=lambda: self.registrar_empresa(empresa_nuevo.get(), rif_nuevo.get(), celular_nuevo.get(), direccion_nuevo.get(), correo_nuevo.get(),top_crear), text="Guardar ", font="sans 14 bold")  
+        btn_guardar.grid(row=5, column=1, columnspan=2, pady=20)
+
+    #---------------------------------------------------------------------------------
+      
+
 
