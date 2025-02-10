@@ -216,6 +216,10 @@ class Clientes(tk.Frame):
 
         btn_guardar = tk.Button(top_modificar, text="Guardar cambios", command=guardar_modificado , font="sans 14 bold")
         btn_guardar.grid(row=5, column=0, columnspan=2, pady=20)
+
+        btn_guardar = tk.Button(top_modificar, fg="white", bg="red", text="Eliminar cliente" , font="sans 14 bold")
+        btn_guardar.grid(row=15, column=0, columnspan=2, pady=20)
+            
             
 #---------------------------------------------------------------------------------     
 
