@@ -5,7 +5,7 @@ from modulos.inventario.inventario import Inventario
 from modulos.clientes import Clientes
 from modulos.pedidos import Pedidos
 from modulos.proveedores.proveedor import Proveedor
-from modulos.informacion import Informacion
+from modulos.informacion.informacion import Informacion
 from PIL import Image, ImageTk
 import sys
 import os
