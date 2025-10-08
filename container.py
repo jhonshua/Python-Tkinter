@@ -1,11 +1,12 @@
 from tkinter import *
 import tkinter as tk
-from modulos.ventas.ventas import Ventas
+from modulos.ventas.ventas_moderna import VentasModerna as Ventas
 from modulos.inventario.inventario import Inventario
 from modulos.clientes import Clientes
 from modulos.pedidos import Pedidos
 from modulos.proveedores.proveedor import Proveedor
 from modulos.informacion.informacion import Informacion
+from modulos.utils.estilos_modernos import estilos
 from PIL import Image, ImageTk
 import sys
 import os
@@ -14,18 +15,25 @@ class Container(tk.Frame):
     def __init__(self, padre, controlador):
         super().__init__(padre)
         self.controlador = controlador
+        
+        # Configurar el frame principal con estilos modernos
+        self.configure(bg=estilos.COLORS['bg_primary'])
         self.pack()
-        self.place(x=0, y=0, width=1200, height=800)
-        self.widgets()
+        self.place(x=0, y=0, width=1400, height=900)  # Tamaño actualizado
+        
+        self.widgets_modernos()
         self.frames = {}
         self.buttons = []
-        for i in (Ventas, Inventario, Clientes, Pedidos, Proveedor, Informacion ):
+        
+        # Crear los frames de los módulos con estilos modernos
+        for i in (Ventas, Inventario, Clientes, Pedidos, Proveedor, Informacion):
             frame = i(self)
             self.frames[i] = frame
             frame.pack()
-            frame.config(bg='#C6D9E3', highlightbackground='gray')
-            frame.place(x= 0, y= 40, width= 1200, height= 800 )
-        self.show_frames( Ventas)
+            frame.config(bg=estilos.COLORS['bg_primary'])
+            frame.place(x=0, y=70, width=1400, height=830)  # Más espacio para navbar
+        
+        self.show_frames(Ventas)
         
     def show_frames(self, container):
         frame = self.frames[container]
@@ -49,74 +57,70 @@ class Container(tk.Frame):
     def Informacion(self):
         self.show_frames(Informacion)
             
-    def widgets(self):
-        frame2 = tk.Frame(self)
-        frame2.place(x= 0, y= 0, width= 1200, height= 45 )
-
-        #-------------------------------------------------------------------------------------------------------------------------------------------
-
-        image_venta = Image.open("media/icons/venta_icon.png")
-        image_venta_resize = image_venta.resize((50, 50))
-        image_venta_tk = ImageTk.PhotoImage(image_venta_resize)
-
-        self.btn_ventas = Button(frame2, fg = "black", text = "Ventas", font = "sans 16 bold", command= self.Ventas )
-        self.btn_ventas.config(image=image_venta_tk , compound=LEFT, padx=20)
-        self.btn_ventas.image = image_venta_tk
-        self.btn_ventas.place(x = 0, y = 0, width = 200, height = 40)
-        #-------------------------------------------------------------------------------------------------------------------------------------------
-        image_inventario = Image.open("media/icons/inventario_icon.png")
-        image_inventario_resize = image_inventario.resize((50, 50))
-        image_inventario_tk = ImageTk.PhotoImage(image_inventario_resize)
-
-        self.btn_inventario = Button(frame2, fg = "black", text = "Inventario", font = "sans 16 bold", command= self.Inventario)
-        self.btn_inventario.config(image=image_inventario_tk , compound=LEFT, padx=20)
-        self.btn_inventario.image = image_inventario_tk
-        self.btn_inventario.place(x = 200, y = 0, width = 200, height = 40)
-        #-------------------------------------------------------------------------------------------------------------------------------------------
-        image_cliente = Image.open("media/icons/cliente_icon.png")
-        image_cliente_resize = image_cliente.resize((50, 50))
-        image_cliente_tk = ImageTk.PhotoImage(image_cliente_resize)
+    def widgets_modernos(self):
+        """Crear la barra de navegación moderna"""
+        # Navbar principal con gradiente simulado
+        navbar_frame = tk.Frame(self, bg=estilos.COLORS['primary'], height=70)
+        navbar_frame.place(x=0, y=0, width=1400, height=70)
         
-        self.btn_clientes = Button(frame2, fg = "black", text = "Clientes", font = "sans 16 bold", command= self.Clientes )
-        self.btn_clientes.config(image=image_cliente_tk , compound=LEFT, padx=20)
-        self.btn_clientes.image = image_cliente_tk
-        self.btn_clientes.place(x = 400, y = 0, width = 200, height = 40)
-
-        #-------------------------------------------------------------------------------------------------------------------------------------------
-
-        image_pedido = Image.open("media/icons/pedido_icon.png")
-        image_pedido_resize = image_pedido.resize((50, 50))
-        image_pedido_tk = ImageTk.PhotoImage(image_pedido_resize)
+        # Título de la aplicación
+        title_label = tk.Label(navbar_frame, text="🏪 Mi Tienda - Sistema de Ventas", 
+                              bg=estilos.COLORS['primary'], fg=estilos.COLORS['white'],
+                              font=('Segoe UI', 18, 'bold'))
+        title_label.place(x=20, y=20)
         
-        self.btn_pedidos = Button(frame2, fg = "black", text = "Pedidos", font = "sans 16 bold", command= self.Pedidos )
-        self.btn_pedidos.config(image=image_pedido_tk , compound=LEFT, padx=20)
-        self.btn_pedidos.image = image_pedido_tk
-        self.btn_pedidos.place(x = 600, y = 0, width = 200, height = 40)
-
-        #-------------------------------------------------------------------------------------------------------------------------------------------
-
-        image_proveedor = Image.open("media/icons/proveedor_icon.png")
-        image_proveedor_resize = image_proveedor.resize((50, 50))
-        image_proveedor_tk = ImageTk.PhotoImage(image_proveedor_resize)
+        # Contenedor de botones de navegación (movido más a la derecha)
+        buttons_frame = tk.Frame(navbar_frame, bg=estilos.COLORS['primary'])
+        buttons_frame.place(x=550, y=10, width=850, height=50)  # Movido de x=400 a x=550
         
-        self.btn_proveedor = Button(frame2, fg = "black", text = "Proveedor", font = "sans 16 bold", command= self.Proveedor )
-        self.btn_proveedor.config(image=image_proveedor_tk , compound=LEFT, padx=5)
-        self.btn_proveedor.image = image_proveedor_tk 
-        self.btn_proveedor.place(x = 800, y = 0, width = 200, height = 40)
-
-        #-------------------------------------------------------------------------------------------------------------------------------------------
-        image_informacion = Image.open("media/icons/informacion_icon.png")
-        image_informacion_resize = image_informacion.resize((50, 50))
-        image_informacion_tk = ImageTk.PhotoImage(image_informacion_resize)
+        from modulos.utils.utils import resource_path
         
-        self.btn_informacion = Button(frame2, fg = "black", text = "Info", font = "sans 16 bold", command= self.Informacion )
-        self.btn_informacion.config(image=image_informacion_tk , compound=LEFT)
-        self.btn_informacion.image = image_informacion_tk 
-        self.btn_informacion.place(x = 1000, y = 0, width = 200, height = 40)
+        # Configuración de botones modernos
+        button_configs = [
+            {"text": "💰 Ventas", "command": self.Ventas, "icon": "venta_icon.png"},
+            {"text": "📦 Inventario", "command": self.Inventario, "icon": "inventario_icon.png"},
+            {"text": "👥 Clientes", "command": self.Clientes, "icon": "cliente_icon.png"},
+            {"text": "📋 Pedidos", "command": self.Pedidos, "icon": "pedido_icon.png"},
+            {"text": "🏭 Proveedores", "command": self.Proveedor, "icon": "proveedor_icon.png"},
+            {"text": "ℹ️ Info", "command": self.Informacion, "icon": "informacion_icon.png"}
+        ]
         
-        #-------------------------------------------------------------------------------------------------------------------------------------------
-
-        self.buttons = [ self.btn_ventas, self.btn_inventario, self.btn_clientes, self.btn_pedidos, self.btn_proveedor, self.btn_informacion]
+        self.buttons = []
+        x_position = 0
+        
+        for config in button_configs:
+            # Crear botón moderno
+            btn = self.crear_boton_navbar(buttons_frame, config["text"], config["command"], x_position)
+            self.buttons.append(btn)
+            x_position += 135  # Espaciado entre botones ajustado
+    
+    def crear_boton_navbar(self, parent, text, command, x_pos):
+        """Crear un botón moderno para la barra de navegación"""
+        btn = tk.Button(parent, text=text, command=command,
+                       bg=estilos.COLORS['primary_light'], 
+                       fg=estilos.COLORS['white'],
+                       font=('Segoe UI', 11, 'bold'),
+                       relief='flat', bd=0, cursor='hand2',
+                       padx=15, pady=8)
+        btn.place(x=x_pos, y=5, width=130, height=40)
+        
+        # Efectos hover modernos
+        def on_enter(e):
+            btn.configure(bg=estilos.COLORS['secondary'])
+        
+        def on_leave(e):
+            btn.configure(bg=estilos.COLORS['primary_light'])
+        
+        def on_click(e):
+            # Efecto de click - cambiar temporalmente el color
+            btn.configure(bg=estilos.COLORS['accent'])
+            self.after(100, lambda: btn.configure(bg=estilos.COLORS['secondary']))
+        
+        btn.bind("<Enter>", on_enter)
+        btn.bind("<Leave>", on_leave)
+        btn.bind("<Button-1>", on_click)
+        
+        return btn
         
         
         

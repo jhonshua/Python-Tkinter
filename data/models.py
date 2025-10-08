@@ -1,16 +1,16 @@
 # modelos/database.py
 import sqlite3
 import sys
-
 def crear_base_de_datos():
     try:
         conn = sqlite3.connect('database.db')
         cursor = conn.cursor()
 
-        # Tabla de artículos
+        # Tabla de artículos (con código de barras)
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS articulos (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
+                codigo TEXT UNIQUE,
                 articulo TEXT NOT NULL,
                 precio REAL NOT NULL,
                 costo REAL NOT NULL,
@@ -19,6 +19,14 @@ def crear_base_de_datos():
                 imagen_path TEXT
             )
         ''')
+        
+        # Agregar columna codigo si no existe (para bases de datos existentes)
+        try:
+            cursor.execute("ALTER TABLE articulos ADD COLUMN codigo TEXT UNIQUE")
+            print("Columna 'codigo' agregada a tabla articulos")
+        except sqlite3.OperationalError:
+            # La columna ya existe, continuar
+            pass
 
         # Tabla de clientes
         cursor.execute('''

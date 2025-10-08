@@ -1,5 +1,17 @@
 import qrcode
+import sys
 import os
+
+
+def resource_path(relative_path):
+ 
+    try:
+  
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
 
 def generar_qr_producto():
     """Genera un código QR con la información de un producto y lo guarda en media/qr.

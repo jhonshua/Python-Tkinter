@@ -6,7 +6,6 @@ import datetime
 import threading
 from PIL import Image, ImageTk
 
-
 import sys
 import os
 
@@ -549,8 +548,8 @@ class Ventas(tk.Frame):
         self.label_precio_total = tk.Label(self, text='Precio a Pagar: $ 0  -  Bs 0', font='sans 18 bold', bg='#C6D9E3' )
         self.label_precio_total.place(x=740, y=690)
 
-
-        image_pago = Image.open("C:/Users/Julio/Desktop/python/Punto de Venta/media/icons/pago_icon.png")
+        from modulos.utils.utils import resource_path
+        image_pago = Image.open(resource_path("media/icons/pago_icon.png"))
         image_pago_resize = image_pago.resize((50, 50))
         image_pago_tk = ImageTk.PhotoImage(image_pago_resize)
 
