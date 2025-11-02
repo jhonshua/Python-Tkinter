@@ -4,6 +4,7 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 from container import Container
 from PIL import Image, ImageTk
+from modulos.utils.utils import resource_path
 
 #---------------------------------------------------------------------------------
 class Login(tk.Frame):
@@ -80,7 +81,7 @@ class Login(tk.Frame):
         frame1 = tk.Frame(self, bg ='#77BEF0', highlightbackground ='black', highlightthickness = 2 )
         frame1.place(x = 350, y = 50, width = 400, height = 560 )
            
-        self.logo_image = Image.open('media/icons/tienda.png')
+        self.logo_image = Image.open(resource_path('media/icons/tienda.png'))
         self.logo_image = self.logo_image.resize((200, 200))
         self.logo_image = ImageTk.PhotoImage(self.logo_image)
         self.logo_label = ttk.Label(frame1, image = self.logo_image)

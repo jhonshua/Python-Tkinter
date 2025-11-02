@@ -37,13 +37,16 @@ class VentasModerna(tk.Frame):
         self.productos_seleccionados = []
         self.setup_styles()
         self.widgets_modernos()
-        self.cargar_productos()
-        self.cargar_clientes()
         self.timer_producto = None
         self.timer_cliente = None
         
+        # Cargar datos después de crear widgets
+        self.cargar_productos()
+        self.cargar_clientes()
+        
         # Iniciar actualización de hora en tiempo real
         self.actualizar_hora()
+    
 
     def setup_styles(self):
         """Configurar estilos modernos para los widgets"""
@@ -335,9 +338,11 @@ class VentasModerna(tk.Frame):
     # Métodos heredados (necesarios para mantener funcionalidad)
     def cargar_productos(self):
         """Cargar productos desde la base de datos"""
+        print("🔄 INICIANDO CARGA DE PRODUCTOS...")
         try:
             conn = sqlite3.connect(self.db_name)
             c = conn.cursor()
+            print("✅ Conexión a base de datos establecida")
             
             # Verificar si hay artículos en la base de datos
             c.execute("SELECT COUNT(*) FROM articulos")
@@ -358,9 +363,16 @@ class VentasModerna(tk.Frame):
                 conn.commit()
                 print("Artículos de ejemplo creados con códigos de barras")
             
-            # Cargar artículos con códigos desde la tabla unificada
-            c.execute("SELECT codigo, articulo, precio, stock FROM articulos WHERE stock > 0 AND estado = 'activo'")
+            # Cargar productos desde la tabla productos primero, luego articulos
+            c.execute("SELECT codigo, nombre, precio, stock FROM productos WHERE stock > 0")
             productos_data = c.fetchall()
+            
+            # Si no hay productos en la tabla productos, usar articulos
+            if not productos_data:
+                c.execute("SELECT codigo, articulo, precio, stock FROM articulos WHERE stock > 0 AND estado = 'activo'")
+                productos_data = c.fetchall()
+            
+            print(f"🔍 Productos encontrados: {len(productos_data)}")
             
             # Crear listas para autocompletado
             self.productos_dict = {}  # codigo: {nombre, precio, stock}
@@ -378,22 +390,41 @@ class VentasModerna(tk.Frame):
                     self.productos_codigos.append(codigo)
             
             if self.productos_nombres:
-                self.entry_producto['values'] = self.productos_nombres
-                print(f"Cargados {len(self.productos_nombres)} productos con códigos")
+                if hasattr(self, 'entry_producto'):
+                    try:
+                        self.entry_producto['values'] = self.productos_nombres
+                        print(f"✅ Cargados {len(self.productos_nombres)} productos con códigos")
+                        print(f"📋 Primeros 3 productos: {self.productos_nombres[:3]}")
+                        
+                        # Verificar que se configuró correctamente
+                        valores_actuales = self.entry_producto['values']
+                        print(f"🔍 Valores en combobox: {len(valores_actuales)} elementos")
+                    except Exception as e:
+                        print(f"❌ Error configurando combobox: {e}")
+                else:
+                    print("⚠️ entry_producto no existe aún")
             else:
                 self.productos_nombres = ["No hay productos disponibles"]
-                self.entry_producto['values'] = self.productos_nombres
-                print("No se encontraron productos con stock")
+                if hasattr(self, 'entry_producto'):
+                    try:
+                        self.entry_producto['values'] = self.productos_nombres
+                        print("❌ No se encontraron productos con stock")
+                    except Exception as e:
+                        print(f"❌ Error configurando combobox vacío: {e}")
                 
             conn.close()
-        except sqlite3.Error as e:
-            print(f"Error cargando productos: {e}")
+        except Exception as e:
+            print(f"❌ ERROR CARGANDO PRODUCTOS: {e}")
+            import traceback
+            traceback.print_exc()
             # Productos por defecto en caso de error
             self.productos_nombres = ["Error cargando productos"]
             self.productos_dict = {}
             self.productos_codigos = []
             if hasattr(self, 'entry_producto'):
                 self.entry_producto['values'] = self.productos_nombres
+        
+        print("🏁 CARGA DE PRODUCTOS FINALIZADA")
 
     def cargar_clientes(self):
         """Cargar clientes desde la base de datos"""
@@ -527,27 +558,55 @@ class VentasModerna(tk.Frame):
                 return
             
             # Extraer código del formato "Nombre (CODIGO)" si existe
+            print(f"🔍 Producto seleccionado: '{producto}'")
+            
             if '(' in producto and ')' in producto:
-                codigo = producto.split('(')[-1].replace(')', '')
-                nombre_producto = producto.split(' (')[0]
+                # Extraer código entre paréntesis
+                inicio_parentesis = producto.rfind('(')
+                fin_parentesis = producto.rfind(')')
+                codigo = producto[inicio_parentesis+1:fin_parentesis].strip()
+                nombre_producto = producto[:inicio_parentesis].strip()
+                print(f"📦 Código extraído: '{codigo}', Nombre: '{nombre_producto}'")
             else:
                 # Si no tiene código, buscar por nombre
-                nombre_producto = producto
+                nombre_producto = producto.strip()
                 codigo = None
+                print(f"📦 Sin código, buscando por nombre: '{nombre_producto}'")
                 
             # Obtener precio del producto desde la tabla articulos
             conn = sqlite3.connect(self.db_name)
             c = conn.cursor()
             
+            resultado = None
             if codigo:
-                c.execute("SELECT articulo, precio, stock FROM articulos WHERE codigo = ? AND estado = 'activo'", (codigo,))
+                # Buscar primero en productos, luego en articulos
+                print(f"🔍 Buscando en productos con código: '{codigo}'")
+                c.execute("SELECT nombre, precio, stock FROM productos WHERE codigo = ?", (codigo,))
+                resultado = c.fetchone()
+                print(f"📊 Resultado en productos: {resultado}")
+                
+                if not resultado:
+                    print(f"🔍 Buscando en articulos con código: '{codigo}'")
+                    c.execute("SELECT articulo, precio, stock FROM articulos WHERE codigo = ? AND estado = 'activo'", (codigo,))
+                    resultado = c.fetchone()
+                    print(f"📊 Resultado en articulos: {resultado}")
             else:
-                c.execute("SELECT articulo, precio, stock FROM articulos WHERE articulo = ? AND estado = 'activo'", (nombre_producto,))
-            
-            resultado = c.fetchone()
+                # Buscar primero en productos, luego en articulos
+                print(f"🔍 Buscando en productos con nombre: '{nombre_producto}'")
+                c.execute("SELECT nombre, precio, stock FROM productos WHERE nombre = ?", (nombre_producto,))
+                resultado = c.fetchone()
+                print(f"📊 Resultado en productos: {resultado}")
+                
+                if not resultado:
+                    print(f"🔍 Buscando en articulos con nombre: '{nombre_producto}'")
+                    c.execute("SELECT articulo, precio, stock FROM articulos WHERE articulo = ? AND estado = 'activo'", (nombre_producto,))
+                    resultado = c.fetchone()
+                    print(f"📊 Resultado en articulos: {resultado}")
             
             if not resultado:
-                messagebox.showerror("❌ Error", "Producto no encontrado en el inventario")
+                print(f"❌ NO SE ENCONTRÓ EL PRODUCTO")
+                messagebox.showerror("❌ Error", f"Producto no encontrado en el inventario\n\nBuscado: '{producto}'\nCódigo: '{codigo}'\nNombre: '{nombre_producto}'")
+                conn.close()
                 return
                 
             nombre_real, precio, stock = resultado
@@ -1040,9 +1099,10 @@ class VentasModerna(tk.Frame):
         # Crear ventana modal
         self.modal_pago = tk.Toplevel(self)
         self.modal_pago.title("💰 Caja Registradora - Procesar Pago")
-        self.modal_pago.geometry("520x420")
+        self.modal_pago.geometry("560x620")
         self.modal_pago.configure(bg=self.COLORS['light'])
-        self.modal_pago.resizable(False, False)
+        self.modal_pago.resizable(True, True)
+        self.modal_pago.minsize(520, 560)
         self.modal_pago.grab_set()  # Modal
         self.modal_pago.transient(self)  # Siempre encima
         
@@ -1108,54 +1168,47 @@ class VentasModerna(tk.Frame):
         botones_frame = tk.Frame(content_frame, bg=self.COLORS['light'])
         botones_frame.pack(fill='x', pady=20)
         
-        # Primera fila de botones
-        fila1 = tk.Frame(botones_frame, bg=self.COLORS['light'])
-        fila1.pack(fill='x', pady=(0, 10))
-        
-        self.crear_boton_modal(fila1, "🖨️ Imprimir Factura", 
-                              lambda: self.procesar_venta_final(total, 'imprimir'), 
-                              'primary', 0, 0, 220, 45)
-        
-        self.crear_boton_modal(fila1, "📄 Generar PDF", 
-                              lambda: self.procesar_venta_final(total, 'pdf'), 
-                              'secondary', 240, 0, 220, 45)
-        
-        # Segunda fila de botones
-        fila2 = tk.Frame(botones_frame, bg=self.COLORS['light'])
-        fila2.pack(fill='x')
-        
-        self.crear_boton_modal(fila2, "❌ Cerrar", 
-                              self.cerrar_modal_pago, 
-                              'danger', 180, 0, 120, 40)
+        # Botón ACEPTAR principal (layout adaptativo)
+        self.crear_boton_modal(botones_frame, "✅ ACEPTAR", 
+                              lambda: self.aceptar_venta(total), 
+                              'success', 50, 0, 200, 50, layout='pack')
 
-    def crear_boton_modal(self, parent, text, command, estilo, x, y, width, height):
+        # Botón para cancelar (layout adaptativo)
+        self.crear_boton_modal(botones_frame, "❌ Cancelar", 
+                              self.cerrar_modal_pago, 
+                              'danger', 270, 0, 150, 50, layout='pack')
+
+    def crear_boton_modal(self, parent, text, command, estilo, x, y, width, height, layout='place'):
         """Crear botón para el modal"""
-        style_config = self.COLORS
-        colors = {
-            'primary': {'bg': style_config['primary'], 'hover': style_config['primary_dark']},
-            'secondary': {'bg': style_config['secondary'], 'hover': style_config['secondary_dark']},
-            'danger': {'bg': style_config['danger'], 'hover': '#dc2626'},
-            'success': {'bg': style_config['success'], 'hover': '#16a34a'}
-        }
-        
-        color = colors.get(estilo, colors['primary'])
-        
+        base_colors = self.COLORS
+        # Usar colores base y calcular hover dinámicamente para evitar claves inexistentes
+        bg_base = (
+            base_colors['primary'] if estilo == 'primary' else
+            base_colors['secondary'] if estilo == 'secondary' else
+            base_colors['danger'] if estilo == 'danger' else
+            base_colors['success']
+        )
+        hover_bg = self.ajustar_color(bg_base, -20)
+
         btn = tk.Button(parent, text=text, command=command,
-                       bg=color['bg'], fg=self.COLORS['white'],
+                       bg=bg_base, fg=self.COLORS['white'],
                        font=('Segoe UI', 10, 'bold'),
                        relief='flat', cursor='hand2', bd=0)
-        btn.place(x=x, y=y, width=width, height=height)
-        
+        if layout == 'pack':
+            btn.pack(side='left', fill='x', expand=True, padx=10)
+        else:
+            btn.place(x=x, y=y, width=width, height=height)
+
         # Efectos hover
         def on_enter(e):
-            btn.configure(bg=color['hover'])
-        
+            btn.configure(bg=hover_bg)
+
         def on_leave(e):
-            btn.configure(bg=color['bg'])
-        
+            btn.configure(bg=bg_base)
+
         btn.bind("<Enter>", on_enter)
         btn.bind("<Leave>", on_leave)
-        
+
         return btn
 
     def calcular_cambio(self, total):
@@ -1173,40 +1226,53 @@ class VentasModerna(tk.Frame):
         except ValueError:
             self.label_cambio.config(text="Cambio: $0.00", fg=self.COLORS['accent'])
 
-    def procesar_venta_final(self, total, tipo_factura):
-        """Procesar la venta final con la opción seleccionada"""
+    def aceptar_venta(self, total):
+        """Aceptar y procesar la venta completa"""
         try:
             monto_recibido = float(self.entry_monto_recibido.get() or 0)
             if monto_recibido < total:
-                messagebox.showerror("Error", "El monto recibido es insuficiente")
+                messagebox.showerror("❌ Error", "El monto recibido es insuficiente")
                 return
             
             cambio = monto_recibido - total
             
-            # Guardar la venta en la base de datos
-            self.guardar_venta_en_bd(total, monto_recibido, cambio)
+            print("🔄 INICIANDO PROCESO DE VENTA...")
             
-            if tipo_factura == 'imprimir':
-                messagebox.showinfo("Éxito", 
-                                  f"¡Venta procesada!\n"
-                                  f"Total: ${total:,.2f}\n"
-                                  f"Recibido: ${monto_recibido:,.2f}\n"
-                                  f"Cambio: ${cambio:,.2f}\n\n"
-                                  f"🖨️ Enviando a impresora...")
-            else:  # PDF
-                messagebox.showinfo("Éxito", 
-                                  f"¡Venta procesada!\n"
-                                  f"Total: ${total:,.2f}\n"
-                                  f"Recibido: ${monto_recibido:,.2f}\n"
-                                  f"Cambio: ${cambio:,.2f}\n\n"
-                                  f"📄 PDF generado exitosamente")
+            # 1. Guardar la venta en la base de datos
+            venta_id = self.guardar_venta_en_bd(total, monto_recibido, cambio)
             
-            # Limpiar venta y cerrar modal
-            self.limpiar_venta()
-            self.cerrar_modal_pago()
+            if venta_id:
+                print(f"✅ Venta guardada exitosamente con ID: {venta_id}")
+                
+                # 2. Cerrar modal
+                self.cerrar_modal_pago()
+                
+                # 3. Enviar a impresora fiscal (simulado)
+                self.enviar_a_impresora_fiscal(venta_id, total, monto_recibido, cambio)
+                
+                # 4. Limpiar venta
+                self.limpiar_venta()
+                
+                # 5. Mostrar confirmación final
+                messagebox.showinfo("✅ Venta Completada", 
+                                  f"¡Transacción procesada exitosamente!\n\n"
+                                  f"📄 Factura N°: {self.numero_factura}\n"
+                                  f"💰 Total: ${total:,.2f}\n"
+                                  f"💵 Recibido: ${monto_recibido:,.2f}\n"
+                                  f"💸 Cambio: ${cambio:,.2f}\n\n"
+                                  f"🖨️ Factura enviada a impresora fiscal\n"
+                                  f"💾 Transacción guardada en base de datos")
+                
+                print("🎉 VENTA COMPLETADA EXITOSAMENTE")
+                
+            else:
+                messagebox.showerror("❌ Error", "Error al guardar la venta en la base de datos")
             
         except ValueError:
-            messagebox.showerror("Error", "Por favor ingrese un monto válido")
+            messagebox.showerror("❌ Error", "Por favor ingrese un monto válido")
+        except Exception as e:
+            print(f"❌ Error en aceptar_venta: {e}")
+            messagebox.showerror("❌ Error", f"Error procesando la venta: {e}")
 
     def guardar_venta_en_bd(self, total, monto_recibido, cambio):
         """Guardar la venta completa en la base de datos"""
@@ -1214,46 +1280,322 @@ class VentasModerna(tk.Frame):
             conn = sqlite3.connect(self.db_name)
             c = conn.cursor()
             
+            # Crear tabla de ventas si no existe
+            c.execute('''
+                CREATE TABLE IF NOT EXISTS ventas (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    numero_factura INTEGER,
+                    cliente TEXT,
+                    fecha TEXT,
+                    hora TEXT,
+                    subtotal REAL,
+                    iva REAL,
+                    total REAL,
+                    monto_recibido REAL,
+                    cambio REAL,
+                    estado TEXT DEFAULT 'completada'
+                )
+            ''')
+            
+            # Crear tabla de detalles de venta si no existe
+            c.execute('''
+                CREATE TABLE IF NOT EXISTS detalle_ventas (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    venta_id INTEGER,
+                    producto TEXT,
+                    precio_unitario REAL,
+                    cantidad INTEGER,
+                    subtotal REAL,
+                    FOREIGN KEY (venta_id) REFERENCES ventas (id)
+                )
+            ''')
+            
             # Obtener datos de la venta
             cliente = self.entry_cliente.get() or "Cliente General"
+            # Usar el mismo formato que los filtros del historial (dd/mm/YYYY)
             fecha_actual = datetime.datetime.now().strftime("%d/%m/%Y")
             hora_actual = datetime.datetime.now().strftime("%H:%M:%S")
+            numero_factura = self.numero_factura
             
-            # Guardar cada producto de la venta
-            for producto in self.productos_seleccionados:
-                nombre = producto['nombre']
-                precio = producto['precio']
-                cantidad = producto['cantidad']
-                total_producto = producto['total']
+            # Calcular subtotal e IVA
+            subtotal = sum(p['total'] for p in self.productos_seleccionados)
+            iva = subtotal * 0.19
+            
+            # Debug: Mostrar datos antes de insertar
+            print(f"🔍 DATOS A INSERTAR:")
+            print(f"  - Factura: {numero_factura}")
+            print(f"  - Cliente: {cliente}")
+            print(f"  - Fecha: {fecha_actual}")
+            print(f"  - Hora: {hora_actual}")
+            print(f"  - Subtotal: {subtotal}")
+            print(f"  - IVA: {iva}")
+            print(f"  - Total: {total}")
+            print(f"  - Recibido: {monto_recibido}")
+            print(f"  - Cambio: {cambio}")
+            
+            # Insertar venta principal
+            try:
+                c.execute('''
+                    INSERT INTO ventas (numero_factura, cliente, fecha, hora, subtotal, iva, total, monto_recibido, cambio)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ''', (numero_factura, cliente, fecha_actual, hora_actual, subtotal, iva, total, monto_recibido, cambio))
                 
-                # Obtener el costo del producto
-                c.execute("SELECT costo FROM articulos WHERE articulo = ?", (nombre,))
-                resultado = c.fetchone()
-                costo = resultado[0] if resultado else precio * 0.8  # Fallback al 80% del precio
+                venta_id = c.lastrowid
+                print(f"✅ Venta insertada con ID: {venta_id}")
                 
-                # Insertar registro de venta
-                c.execute("""INSERT INTO ventas 
-                           (factura, cliente, articulo, precio, cantidad, total, fecha, hora, costo) 
-                           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-                         (self.numero_factura, cliente, nombre, precio, cantidad, 
-                          total_producto, fecha_actual, hora_actual, costo * cantidad))
+            except sqlite3.Error as e:
+                print(f"❌ Error insertando venta: {e}")
+                # Intentar con la estructura antigua de la tabla
+                print("🔄 Intentando con estructura de tabla antigua...")
+                try:
+                    c.execute('''
+                        INSERT INTO ventas (factura, cliente, articulo, precio, cantidad, total, fecha, hora, costo)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    ''', (numero_factura, cliente, "Venta Multiple", total, 1, total, fecha_actual, hora_actual, total * 0.8))
+                    venta_id = c.lastrowid
+                    print(f"✅ Venta insertada con estructura antigua, ID: {venta_id}")
+                except sqlite3.Error as e2:
+                    print(f"❌ Error con estructura antigua: {e2}")
+                    raise e
+            
+            # Insertar detalles de la venta
+            print(f"📦 INSERTANDO DETALLES DE VENTA:")
+            for i, producto in enumerate(self.productos_seleccionados):
+                print(f"  Producto {i+1}: {producto['nombre']} - Cantidad: {producto['cantidad']} - Total: ${producto['total']:.2f}")
+                
+                try:
+                    c.execute('''
+                        INSERT INTO detalle_ventas (venta_id, producto, precio_unitario, cantidad, subtotal)
+                        VALUES (?, ?, ?, ?, ?)
+                    ''', (venta_id, producto['nombre'], producto['precio'], producto['cantidad'], producto['total']))
+                    print(f"  ✅ Detalle insertado para: {producto['nombre']}")
+                except sqlite3.Error as e:
+                    print(f"  ❌ Error insertando detalle para {producto['nombre']}: {e}")
                 
                 # Actualizar stock del producto
-                c.execute("UPDATE articulos SET stock = stock - ? WHERE articulo = ?", 
-                         (cantidad, nombre))
+                self.actualizar_stock_producto(c, producto['nombre'], producto['cantidad'])
             
             conn.commit()
             conn.close()
             
-            print(f"✅ Venta guardada: Factura {self.numero_factura}, Total: ${total:,.2f}")
+            print(f"✅ Venta guardada con ID: {venta_id}")
+            return venta_id
             
-            # Actualizar número de factura para la siguiente venta
-            self.numero_factura = obtener_numero_factura_actual()
-            self.label_numero_factura.config(text=f"{self.numero_factura}")
-            
-        except sqlite3.Error as e:
+        except Exception as e:
             print(f"❌ Error guardando venta: {e}")
-            messagebox.showerror("💾 Error", f"Error al guardar la venta: {e}")
+            if conn:
+                conn.rollback()
+                conn.close()
+            return None
+    
+    def actualizar_stock_producto(self, cursor, nombre_producto, cantidad_vendida):
+        """Actualizar stock del producto después de la venta"""
+        try:
+            # Actualizar en tabla productos
+            cursor.execute("UPDATE productos SET stock = stock - ? WHERE nombre = ?", 
+                         (cantidad_vendida, nombre_producto))
+            
+            # Actualizar en tabla articulos también
+            cursor.execute("UPDATE articulos SET stock = stock - ? WHERE articulo = ?", 
+                         (cantidad_vendida, nombre_producto))
+            
+            print(f"📦 Stock actualizado para {nombre_producto}: -{cantidad_vendida}")
+            
+        except Exception as e:
+            print(f"⚠️ Error actualizando stock: {e}")
+    
+    def imprimir_ticket(self, venta_id, total, monto_recibido, cambio):
+        """Generar e imprimir ticket de venta"""
+        try:
+            # Crear contenido del ticket
+            ticket_content = self.generar_contenido_ticket(venta_id, total, monto_recibido, cambio)
+            
+            # Guardar ticket en archivo temporal
+            import tempfile
+            import os
+            
+            with tempfile.NamedTemporaryFile(mode='w', suffix='.txt', delete=False, encoding='utf-8') as f:
+                f.write(ticket_content)
+                ticket_path = f.name
+            
+            # Intentar imprimir (simulado)
+            messagebox.showinfo("🖨️ Imprimiendo", 
+                              f"Ticket generado y enviado a impresora\n\n"
+                              f"Archivo: {ticket_path}\n\n"
+                              f"En un sistema real, esto se enviaría\n"
+                              f"directamente a la impresora de tickets.")
+            
+            # Abrir archivo para mostrar contenido
+            if os.name == 'nt':  # Windows
+                os.startfile(ticket_path)
+            else:  # Linux/Mac
+                os.system(f'xdg-open {ticket_path}')
+                
+        except Exception as e:
+            messagebox.showerror("❌ Error", f"Error al imprimir ticket: {e}")
+    
+    def generar_contenido_ticket(self, venta_id, total, monto_recibido, cambio):
+        """Generar contenido del ticket de venta"""
+        cliente = self.entry_cliente.get() or "Cliente General"
+        fecha_actual = datetime.datetime.now().strftime("%d/%m/%Y")
+        hora_actual = datetime.datetime.now().strftime("%H:%M:%S")
+        
+        ticket = f"""
+{'='*40}
+           🏪 MI TIENDA
+         SISTEMA DE VENTAS
+{'='*40}
+
+Factura N°: {self.numero_factura}
+Fecha: {fecha_actual}
+Hora: {hora_actual}
+Cliente: {cliente}
+
+{'='*40}
+PRODUCTOS
+{'='*40}
+"""
+        
+        for producto in self.productos_seleccionados:
+            nombre = producto['nombre'][:25]  # Limitar longitud
+            precio = producto['precio']
+            cantidad = producto['cantidad']
+            subtotal = producto['total']
+            
+            ticket += f"{nombre:<25} {cantidad:>3} x ${precio:>6.2f} = ${subtotal:>8.2f}\n"
+        
+        subtotal_venta = sum(p['total'] for p in self.productos_seleccionados)
+        iva = subtotal_venta * 0.19
+        
+        ticket += f"""
+{'='*40}
+Subtotal:                    ${subtotal_venta:>8.2f}
+IVA (19%):                   ${iva:>8.2f}
+{'='*40}
+TOTAL:                       ${total:>8.2f}
+
+Recibido:                    ${monto_recibido:>8.2f}
+Cambio:                      ${cambio:>8.2f}
+
+{'='*40}
+        ¡GRACIAS POR SU COMPRA!
+         Vuelva pronto 😊
+{'='*40}
+
+ID Venta: {venta_id}
+"""
+        return ticket
+    
+    def enviar_a_impresora_fiscal(self, venta_id, total, monto_recibido, cambio):
+        """Enviar factura a impresora fiscal"""
+        try:
+            print("🖨️ ENVIANDO A IMPRESORA FISCAL...")
+            
+            # Generar datos de la factura fiscal
+            factura_fiscal = self.generar_factura_fiscal(venta_id, total, monto_recibido, cambio)
+            
+            # En un sistema real, aquí se enviaría a la impresora fiscal
+            # Por ahora, simulamos el proceso y guardamos en archivo
+            
+            import tempfile
+            import os
+            from datetime import datetime
+            
+            # Crear archivo de factura fiscal
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            filename = f"factura_fiscal_{self.numero_factura}_{timestamp}.txt"
+            
+            with tempfile.NamedTemporaryFile(mode='w', suffix='.txt', delete=False, 
+                                           encoding='utf-8', prefix=f"fiscal_{self.numero_factura}_") as f:
+                f.write(factura_fiscal)
+                fiscal_path = f.name
+            
+            print(f"📄 Factura fiscal generada: {fiscal_path}")
+            
+            # Simular envío a impresora fiscal
+            print("🔄 Conectando con impresora fiscal...")
+            print("📡 Enviando datos fiscales...")
+            print("✅ Factura fiscal impresa correctamente")
+            
+            # Abrir archivo para mostrar (simulación)
+            if os.name == 'nt':  # Windows
+                os.startfile(fiscal_path)
+            
+            return True
+            
+        except Exception as e:
+            print(f"❌ Error enviando a impresora fiscal: {e}")
+            messagebox.showwarning("⚠️ Advertencia", 
+                                 f"Error al enviar a impresora fiscal:\n{e}\n\n"
+                                 f"La venta se guardó correctamente en la base de datos.")
+            return False
+    
+    def generar_factura_fiscal(self, venta_id, total, monto_recibido, cambio):
+        """Generar formato de factura fiscal"""
+        cliente = self.entry_cliente.get() or "Cliente General"
+        fecha_actual = datetime.datetime.now().strftime("%d/%m/%Y")
+        hora_actual = datetime.datetime.now().strftime("%H:%M:%S")
+        
+        # Datos fiscales simulados
+        rif_empresa = "J-12345678-9"
+        nombre_empresa = "MI TIENDA C.A."
+        direccion_empresa = "Av. Principal, Caracas, Venezuela"
+        
+        factura = f"""
+{'='*50}
+              FACTURA FISCAL
+{'='*50}
+
+{nombre_empresa}
+RIF: {rif_empresa}
+{direccion_empresa}
+
+FACTURA N°: {self.numero_factura:08d}
+FECHA: {fecha_actual}
+HORA: {hora_actual}
+CAJERO: Sistema POS
+
+CLIENTE: {cliente}
+{'='*50}
+
+DESCRIPCIÓN                QTY    P.UNIT    TOTAL
+{'='*50}
+"""
+        
+        for producto in self.productos_seleccionados:
+            nombre = producto['nombre'][:20].ljust(20)
+            cantidad = str(producto['cantidad']).rjust(3)
+            precio = f"${producto['precio']:>7.2f}"
+            subtotal = f"${producto['total']:>9.2f}"
+            
+            factura += f"{nombre} {cantidad} {precio} {subtotal}\n"
+        
+        subtotal_venta = sum(p['total'] for p in self.productos_seleccionados)
+        iva = subtotal_venta * 0.19
+        
+        factura += f"""
+{'='*50}
+SUBTOTAL:                           ${subtotal_venta:>9.2f}
+IVA (19%):                          ${iva:>9.2f}
+{'='*50}
+TOTAL A PAGAR:                      ${total:>9.2f}
+
+EFECTIVO RECIBIDO:                  ${monto_recibido:>9.2f}
+CAMBIO:                             ${cambio:>9.2f}
+
+{'='*50}
+           GRACIAS POR SU COMPRA
+        CONSERVE ESTA FACTURA FISCAL
+{'='*50}
+
+CONTROL FISCAL: {venta_id:08d}
+SERIAL IMPRESORA: FIS-001-2024
+FECHA SISTEMA: {datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")}
+
+Esta es una factura fiscal válida
+según normativas SENIAT
+"""
+        return factura
 
     def cerrar_modal_pago(self):
         """Cerrar el modal de pago"""

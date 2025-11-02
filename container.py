@@ -1,15 +1,20 @@
 from tkinter import *
 import tkinter as tk
+import customtkinter as ctk
 from modulos.ventas.ventas_moderna import VentasModerna as Ventas
-from modulos.inventario.inventario import Inventario
-from modulos.clientes import Clientes
-from modulos.pedidos import Pedidos
-from modulos.proveedores.proveedor import Proveedor
-from modulos.informacion.informacion import Informacion
+from modulos.inventario.inventario_simple import InventarioSimple as Inventario
+from modulos.clientes_moderno import ClientesModerno as Clientes
+from modulos.pedidos_moderno import PedidosModerno as Pedidos
+from modulos.proveedores.proveedor_moderno import ProveedorModerno as Proveedor
+from modulos.informacion.informacion_moderna import InformacionModerna as Informacion
 from modulos.utils.estilos_modernos import estilos
 from PIL import Image, ImageTk
 import sys
 import os
+
+# Configurar CustomTkinter
+ctk.set_appearance_mode("light")  # Modo claro
+ctk.set_default_color_theme("blue")  # Tema azul
 
 class Container(tk.Frame):
     def __init__(self, padre, controlador):
@@ -69,6 +74,7 @@ class Container(tk.Frame):
                               font=('Segoe UI', 18, 'bold'))
         title_label.place(x=20, y=20)
         
+        
         # Contenedor de botones de navegación (movido más a la derecha)
         buttons_frame = tk.Frame(navbar_frame, bg=estilos.COLORS['primary'])
         buttons_frame.place(x=550, y=10, width=850, height=50)  # Movido de x=400 a x=550
@@ -95,30 +101,26 @@ class Container(tk.Frame):
             x_position += 135  # Espaciado entre botones ajustado
     
     def crear_boton_navbar(self, parent, text, command, x_pos):
-        """Crear un botón moderno para la barra de navegación"""
-        btn = tk.Button(parent, text=text, command=command,
-                       bg=estilos.COLORS['primary_light'], 
-                       fg=estilos.COLORS['white'],
-                       font=('Segoe UI', 11, 'bold'),
-                       relief='flat', bd=0, cursor='hand2',
-                       padx=15, pady=8)
-        btn.place(x=x_pos, y=5, width=130, height=40)
+        """Crear un botón moderno con CustomTkinter (esquinas perfectamente redondeadas)"""
         
-        # Efectos hover modernos
-        def on_enter(e):
-            btn.configure(bg=estilos.COLORS['secondary'])
+        # Crear botón CustomTkinter con esquinas redondeadas nativas
+        btn = ctk.CTkButton(
+            parent,
+            text=text,
+            command=command,
+            width=130,
+            height=40,
+            corner_radius=15,  # Esquinas muy redondeadas
+            font=ctk.CTkFont(family="Segoe UI", size=11, weight="bold"),
+            fg_color=estilos.COLORS['primary_light'],  # Color normal
+            hover_color=estilos.COLORS['secondary'],   # Color hover
+            text_color=estilos.COLORS['white'],        # Color del texto
+            border_width=0,                            # Sin borde
+            cursor="hand2"                             # Cursor de mano
+        )
         
-        def on_leave(e):
-            btn.configure(bg=estilos.COLORS['primary_light'])
-        
-        def on_click(e):
-            # Efecto de click - cambiar temporalmente el color
-            btn.configure(bg=estilos.COLORS['accent'])
-            self.after(100, lambda: btn.configure(bg=estilos.COLORS['secondary']))
-        
-        btn.bind("<Enter>", on_enter)
-        btn.bind("<Leave>", on_leave)
-        btn.bind("<Button-1>", on_click)
+        # Posicionar el botón
+        btn.place(x=x_pos, y=5)
         
         return btn
         

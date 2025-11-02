@@ -1,5 +1,4 @@
 import sqlite3
-from tkinter import *
 import tkinter as tk
 from tkinter import ttk, messagebox, filedialog
 from PIL import Image, ImageTk
@@ -7,6 +6,12 @@ from modulos.utils.utils import generar_qr_producto
 import threading
 import sys
 import os
+import customtkinter as ctk
+from modulos.utils.estilos_modernos import estilos
+
+# Configurar CustomTkinter para inventario
+ctk.set_appearance_mode("light")
+ctk.set_default_color_theme("blue")
 
 class Inventario(tk.Frame):
     
@@ -80,14 +85,45 @@ class Inventario(tk.Frame):
         lblframe_botones = LabelFrame(self, text="Opciones", font="arial 14 bold", bg='#C6D9E3')
         lblframe_botones.place(x=10, y=350, width=280, height=250)
         
-        btn1 = tk.Button(lblframe_botones, text="Agregar", font="arial 14 bold", command=self.agregar_articulo )
-        btn1.place(x=40, y=20, width=180, height=40)
+        # Botones modernos con CustomTkinter
+        btn1 = ctk.CTkButton(
+            lblframe_botones, 
+            text="➕ Agregar", 
+            command=self.agregar_articulo,
+            width=180,
+            height=40,
+            corner_radius=10,
+            font=ctk.CTkFont(family="Segoe UI", size=12, weight="bold"),
+            fg_color=estilos.COLORS['success'],
+            hover_color=estilos.COLORS['success_dark'] if 'success_dark' in estilos.COLORS else "#28a745"
+        )
+        btn1.place(x=40, y=20)
         
-        btn2 = tk.Button(lblframe_botones, text="Editar", font="arial 14 bold", command= self.editar_articulo)
-        btn2.place(x=40, y=80, width=180, height=40)
+        btn2 = ctk.CTkButton(
+            lblframe_botones, 
+            text="✏️ Editar", 
+            command=self.editar_articulo,
+            width=180,
+            height=40,
+            corner_radius=10,
+            font=ctk.CTkFont(family="Segoe UI", size=12, weight="bold"),
+            fg_color=estilos.COLORS['warning'],
+            hover_color=estilos.COLORS['warning_dark'] if 'warning_dark' in estilos.COLORS else "#ffc107"
+        )
+        btn2.place(x=40, y=80)
 
-        btn3 = tk.Button(lblframe_botones, text="Imprimir etiqueta", font="arial 14 bold", command= generar_qr_producto)
-        btn3.place(x=40, y=140, width=180, height=40)
+        btn3 = ctk.CTkButton(
+            lblframe_botones, 
+            text="🏷️ Imprimir etiqueta", 
+            command=generar_qr_producto,
+            width=180,
+            height=40,
+            corner_radius=10,
+            font=ctk.CTkFont(family="Segoe UI", size=12, weight="bold"),
+            fg_color=estilos.COLORS['secondary'],
+            hover_color=estilos.COLORS['secondary_dark'] if 'secondary_dark' in estilos.COLORS else "#6c757d"
+        )
+        btn3.place(x=40, y=140)
     
     #---------------------------------------------------------------------------------
         
@@ -215,11 +251,11 @@ class Inventario(tk.Frame):
         for widget in self.scrollable_frame.winfo_children():
             widget.destroy()
             
-        query = "SELECT articulo, precio, image_path FROM articulos"
+        query = "SELECT codigo, articulo, precio, image_path FROM articulos WHERE estado = 'activo'"
         params = []
         
         if filtro:
-            query += " WHERE articulo LIKE ?"
+            query += " AND articulo LIKE ?"
             params.append(f'%{filtro}%')
             
         self.cur.execute(query, params)
@@ -228,12 +264,12 @@ class Inventario(tk.Frame):
         self.row = 0
         self.column = 0
         
-        for articulo, precio, image_path in articulos:
-            self.mostrar_articulo(articulo, precio, image_path)
+        for codigo, articulo, precio, image_path in articulos:
+            self.mostrar_articulo(codigo, articulo, precio, image_path)
                       
     #---------------------------------------------------------------------------------
     
-    def mostrar_articulo(self, articulo, precio, image_path):
+    def mostrar_articulo(self, codigo, articulo, precio, image_path):
         article_frame = tk.Frame(self.scrollable_frame, bg='white', relief='solid')
         article_frame.grid(row=self.row, column=self.column, padx=10, pady=10)
         
@@ -250,6 +286,9 @@ class Inventario(tk.Frame):
         
         precio_label = tk.Label(article_frame, text=f'precio: ${precio:.2f}', bg='white', anchor='w', wraplength=150, font='arial 8 bold' ) 
         precio_label.pack(side="bottom", fill='x')
+        
+        codigo_label = tk.Label(article_frame, text=f'C�digo: {codigo}', bg='white', anchor='w', wraplength=150, font='arial 8' )
+        codigo_label.pack(side="bottom", fill='x')
         
         self.column += 1
         if self.column > 4:

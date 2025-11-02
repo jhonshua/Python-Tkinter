@@ -212,7 +212,7 @@ class Ventas(tk.Frame):
         entry_monto = ttk.Entry( ventana_pago, font="sans 14 bold")
         entry_monto.place(x=80, y=210, width=240, height=40)
 
-        button_confirmar_pago = tk.Button(ventana_pago, text="Confirmar pago", font="sans 14 bold", command=lambda: self.procesar_pago(entry_monto.get(), ventana_pago, total_venta))
+        button_confirmar_pago = tk.Button(ventana_pago, text="Aceptar", font="sans 14 bold", command=lambda: self.procesar_pago(entry_monto.get(), ventana_pago, total_venta))
         button_confirmar_pago.place(x=80, y=270,width=240,height=40)
 
     #---------------------------------------------------------------------------------

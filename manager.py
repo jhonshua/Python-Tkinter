@@ -3,7 +3,7 @@ from tkinter import ttk
 from data.models import crear_base_de_datos
 from PIL import Image, ImageTk
 
-from modulos.login.login import Login, Registro
+from login_simple import mostrar_login_simple
 from container import Container
 from modulos.utils.utils import resource_path
 from modulos.utils.estilos_modernos import estilos
@@ -34,13 +34,13 @@ class Manager(Tk):
         container.pack(side=TOP, fill=BOTH, expand=True)
         container.configure(width=1400, height=900)
         
-        self.frames = {}
-        for i in (Login, Registro, Container):
-            frame = i(container, self)
-            self.frames[i] = frame
-            
-        # self.show_frame(Login)
-        self.show_frame(Container)
+        # Crear solo el container principal
+        self.container_frame = Container(container, self)
+        self.container_frame.pack(fill=BOTH, expand=True)
+        
+        # Iniciar en la sección de ventas
+        from modulos.ventas.ventas_moderna import VentasModerna as Ventas
+        self.container_frame.show_frames(Ventas)
         
         # Configurar tema y estilos modernos
         self.configurar_estilos_modernos()
@@ -101,13 +101,19 @@ class Manager(Tk):
                            background=estilos.COLORS['primary'],
                            foreground=estilos.COLORS['white'])
 
-    def show_frame(self, container):    
-        frame = self.frames[container]   
-        frame.tkraise()
-        
 def main():
-    app = Manager()
-    app.mainloop()
+    """Función principal que maneja el flujo de login y aplicación"""
+    # Crear base de datos primero
+    crear_base_de_datos()
+    
+    # Mostrar login primero
+    if mostrar_login_simple():
+        # Si el login fue exitoso, abrir la aplicación principal
+        app = Manager()
+        app.mainloop()
+    else:
+        # Si se canceló el login, salir
+        print("Login cancelado. Cerrando aplicación...")
     
 if __name__ == "__main__":
     main()
