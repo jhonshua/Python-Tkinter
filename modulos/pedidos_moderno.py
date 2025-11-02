@@ -72,7 +72,7 @@ class PedidosModerno(tk.Frame):
                                   font=('Segoe UI', 16, 'bold'), 
                                   bg=estilos.COLORS['white'],
                                   fg=estilos.COLORS['primary'])
-        form_frame.place(x=20, y=20, width=320, height=650)
+        form_frame.place(x=20, y=20, width=320, height=720)
 
         # Título del formulario
         title_label = tk.Label(form_frame, text="📝 Pedido de Reposición", 
@@ -179,6 +179,13 @@ class PedidosModerno(tk.Frame):
             hover_color="#0ea5e9"
         )
         btn_recibir.place(x=10, y=600)
+        
+        # Etiqueta de estadísticas dentro del form_frame
+        self.stats_label = tk.Label(form_frame, text="Total pedidos: 0", 
+                                   font=('Segoe UI', 10, 'bold'), 
+                                   bg=estilos.COLORS['white'],
+                                   fg=estilos.COLORS['primary'])
+        self.stats_label.place(x=10, y=660)
 
         # Frame para la tabla
         table_frame = tk.LabelFrame(self, text="📋 Lista de Pedidos", 
@@ -243,16 +250,6 @@ class PedidosModerno(tk.Frame):
         self.tree.column("Observaciones", width=200, anchor="w")
 
         self.tree.bind('<<TreeviewSelect>>', self.on_select)
-
-        # Frame de estadísticas
-        stats_frame = tk.Frame(self, bg=estilos.COLORS['white'], relief='solid', bd=1)
-        stats_frame.place(x=20, y=690, width=320, height=50)
-        
-        self.stats_label = tk.Label(stats_frame, text="Total pedidos: 0", 
-                                   font=('Segoe UI', 10, 'bold'), 
-                                   bg=estilos.COLORS['white'],
-                                   fg=estilos.COLORS['primary'])
-        self.stats_label.place(x=10, y=15)
 
     def cargar_productos(self):
         """Cargar productos en el combobox"""
@@ -340,7 +337,8 @@ class PedidosModerno(tk.Frame):
                 row_formateada[4] = total_formateado
                 self.tree.insert("", "end", values=row_formateada)
             
-            self.stats_label.config(text=f"Total pedidos: {len(rows)}")
+            if hasattr(self, 'stats_label'):
+                self.stats_label.config(text=f"Total pedidos: {len(rows)}")
             conn.close()
         except sqlite3.Error as e:
             messagebox.showerror("❌ Error", f"Error al cargar pedidos: {e}")

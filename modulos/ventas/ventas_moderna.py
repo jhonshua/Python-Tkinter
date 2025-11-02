@@ -1536,10 +1536,12 @@ ID Venta: {venta_id}
         fecha_actual = datetime.datetime.now().strftime("%d/%m/%Y")
         hora_actual = datetime.datetime.now().strftime("%H:%M:%S")
         
-        # Datos fiscales simulados
-        rif_empresa = "J-12345678-9"
-        nombre_empresa = "MI TIENDA C.A."
-        direccion_empresa = "Av. Principal, Caracas, Venezuela"
+        # Obtener datos de la empresa desde la configuración
+        from modulos.configuracion.gestor_configuracion import obtener_configuracion
+        nombre_empresa = obtener_configuracion('nombre_empresa', 'Mi Tienda')
+        direccion_empresa = obtener_configuracion('direccion_empresa', 'Caracas, Venezuela')
+        rif_empresa = obtener_configuracion('rif_empresa', 'J-00000000-0')
+        telefono_empresa = obtener_configuracion('telefono_empresa', '+58-212-1234567')
         
         factura = f"""
 {'='*50}

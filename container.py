@@ -26,9 +26,13 @@ class Container(tk.Frame):
         self.pack()
         self.place(x=0, y=0, width=1400, height=900)  # Tamaño actualizado
         
-        self.widgets_modernos()
+        # Inicializar antes de widgets_modernos() porque los botones necesitan estos atributos
         self.frames = {}
         self.buttons = []
+        self.active_button = None  # Botón activo actual
+        self.button_map = {}  # Mapeo de módulos a botones
+        
+        self.widgets_modernos()
         
         # Crear los frames de los módulos con estilos modernos
         for i in (Ventas, Inventario, Clientes, Pedidos, Proveedor, Informacion):
@@ -42,7 +46,10 @@ class Container(tk.Frame):
         
     def show_frames(self, container):
         frame = self.frames[container]
-        frame.tkraise() 
+        frame.tkraise()
+        
+        # Actualizar el color del botón activo
+        self.actualizar_boton_activo(container) 
         
     def Ventas(self):
         self.show_frames(Ventas)
@@ -61,6 +68,18 @@ class Container(tk.Frame):
     
     def Informacion(self):
         self.show_frames(Informacion)
+    
+    def actualizar_boton_activo(self, container):
+        """Actualizar el color del botón activo y restaurar los demás"""
+        # Restaurar todos los botones a su color normal
+        for btn in self.buttons:
+            btn.configure(fg_color=estilos.COLORS['primary_light'])
+        
+        # Cambiar el color del botón activo
+        if container in self.button_map:
+            active_btn = self.button_map[container]
+            active_btn.configure(fg_color=estilos.COLORS['secondary'])  # Color diferente para activo
+            self.active_button = active_btn
             
     def widgets_modernos(self):
         """Crear la barra de navegación moderna"""
@@ -83,12 +102,12 @@ class Container(tk.Frame):
         
         # Configuración de botones modernos
         button_configs = [
-            {"text": "💰 Ventas", "command": self.Ventas, "icon": "venta_icon.png"},
-            {"text": "📦 Inventario", "command": self.Inventario, "icon": "inventario_icon.png"},
-            {"text": "👥 Clientes", "command": self.Clientes, "icon": "cliente_icon.png"},
-            {"text": "📋 Pedidos", "command": self.Pedidos, "icon": "pedido_icon.png"},
-            {"text": "🏭 Proveedores", "command": self.Proveedor, "icon": "proveedor_icon.png"},
-            {"text": "ℹ️ Info", "command": self.Informacion, "icon": "informacion_icon.png"}
+            {"text": "💰 Ventas", "command": self.Ventas, "icon": "venta_icon.png", "module": Ventas},
+            {"text": "📦 Inventario", "command": self.Inventario, "icon": "inventario_icon.png", "module": Inventario},
+            {"text": "👥 Clientes", "command": self.Clientes, "icon": "cliente_icon.png", "module": Clientes},
+            {"text": "📋 Pedidos", "command": self.Pedidos, "icon": "pedido_icon.png", "module": Pedidos},
+            {"text": "🏭 Proveedores", "command": self.Proveedor, "icon": "proveedor_icon.png", "module": Proveedor},
+            {"text": "ℹ️ Info", "command": self.Informacion, "icon": "informacion_icon.png", "module": Informacion}
         ]
         
         self.buttons = []
@@ -98,7 +117,13 @@ class Container(tk.Frame):
             # Crear botón moderno
             btn = self.crear_boton_navbar(buttons_frame, config["text"], config["command"], x_position)
             self.buttons.append(btn)
+            # Mapear el módulo al botón
+            self.button_map[config["module"]] = btn
             x_position += 135  # Espaciado entre botones ajustado
+        
+        # Actualizar el botón activo inicial (Ventas)
+        if Ventas in self.button_map:
+            self.actualizar_boton_activo(Ventas)
     
     def crear_boton_navbar(self, parent, text, command, x_pos):
         """Crear un botón moderno con CustomTkinter (esquinas perfectamente redondeadas)"""

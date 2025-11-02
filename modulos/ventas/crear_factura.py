@@ -9,6 +9,7 @@ import sys
 import os
 
 from modulos.ventas.obtener_numero_factura import obtener_numero_factura_actual
+from modulos.configuracion.gestor_configuracion import obtener_configuracion
 
 
 def generar_factura(total_venta, cliente):
@@ -33,11 +34,13 @@ def generar_factura(total_venta, cliente):
 
    #---------------------------------------------------------------------------
 
-        empresa_nombre = "Mini Market Version 1.0"
-        empresa_direccion = "Calle 1 # 1a - 01, Neiva - Hula"
-        empresa_telefono = "+57 1234546789"
-        empresa_email = "info@marketsystem.com"
-        empresa_website = "www.marketsystem.com"
+        # Obtener datos de la empresa desde la configuración
+        empresa_nombre = obtener_configuracion('nombre_empresa', 'Mi Tienda')
+        empresa_direccion = obtener_configuracion('direccion_empresa', 'Caracas, Venezuela')
+        empresa_telefono = obtener_configuracion('telefono_empresa', '+58-212-1234567')
+        empresa_rif = obtener_configuracion('rif_empresa', 'J-00000000-0')
+        empresa_email = "info@marketsystem.com"  # Mantener como opcional
+        empresa_website = "www.marketsystem.com"  # Mantener como opcional
 
 
         c.setFont("Helvetica-Bold", 18)
@@ -48,25 +51,26 @@ def generar_factura(total_venta, cliente):
         c.setFont("Helvetica-Bold", 12)
         c.drawString(50, 710, f"{empresa_nombre}")
         c.setFont("Helvetica", 12)
-        c.drawString(50, 690, f"Direccion : {empresa_direccion}")
-        c.drawString(50, 670, f"Telefono :  : {empresa_telefono}")
-        c.drawString(50, 650, f"Email : {empresa_email}")
-        c.drawString(50, 630, f"Website : {empresa_website}")
+        c.drawString(50, 690, f"RIF: {empresa_rif}")
+        c.drawString(50, 670, f"Direccion: {empresa_direccion}")
+        c.drawString(50, 650, f"Telefono: {empresa_telefono}")
+        c.drawString(50, 630, f"Email: {empresa_email}")
+        c.drawString(50, 610, f"Website: {empresa_website}")
 
         c.setLineWidth(0.5)
         c.setStrokeColor(colors.gray)
-        c.line(50, 620, 550, 620)
+        c.line(50, 600, 550, 600)
 
         c.setFont("Helvetica", 12)
-        c.drawString(50, 600, f"Numero de factura : {numero_factura}")
-        c.drawString(50, 580, f"Fecha : {datetime.datetime.now().strftime('%Y-%m-%d %H:%M')}")
+        c.drawString(50, 580, f"Numero de factura: {numero_factura}")
+        c.drawString(50, 560, f"Fecha: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M')}")
 
-        c.line(50, 560, 550, 560)
+        c.line(50, 540, 550, 540)
             
-        c.drawString(50, 540, f"Cliente: {cliente}")
-        c.drawString(50, 520, f"Descripcion de productos:")
+        c.drawString(50, 520, f"Cliente: {cliente}")
+        c.drawString(50, 500, f"Descripcion de productos:")
 
-        y_offset = 500
+        y_offset = 480
         c.setFont("Helvetica-Bold", 12)
         c.drawString(70, y_offset, "Propducto")
         c.drawString(270, y_offset, "Cantidad")

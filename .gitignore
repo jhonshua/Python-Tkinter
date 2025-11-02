@@ -1,6 +1,310 @@
-# Ignorar el entorno virtual
-env/
+# ============================================
+# Python
+# ============================================
 
-# Otros patrones que desees ignorar (opcional)
-*.pyc  # Archivos compilados de Python
-__pycache__/  # Directorios de caché de Python
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Scrapy stuff:
+.scrapy
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+.pybuilder/
+target/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+.python-version
+
+# pipenv
+Pipfile.lock
+
+# poetry
+poetry.lock
+
+# pdm
+.pdm.toml
+
+# PEP 582
+__pypackages__/
+
+# Celery stuff
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# pytype static type analyzer
+.pytype/
+
+# Cython debug symbols
+cython_debug/
+
+# ============================================
+# IDEs y Editores
+# ============================================
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# PyCharm
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# ============================================
+# Sistema Operativo
+# ============================================
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# ============================================
+# Base de Datos
+# ============================================
+
+# SQLite
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
+database.db
+database.db-journal
+*.sqlite
+*.sqlite3
+
+# ============================================
+# Archivos Temporales y Logs
+# ============================================
+
+# Logs
+*.log
+logs/
+*.log.*
+
+# Archivos temporales
+*.tmp
+*.temp
+*.bak
+*.backup
+*.old
+*.swp
+*.swo
+*~
+
+# ============================================
+# Archivos Específicos del Proyecto
+# ============================================
+
+# Archivos de prueba temporales
+test_*.py
+debug_*.py
+verificar_*.py
+fix_*.py
+
+# Scripts de demostración (opcional, descomentar si no quieres incluirlos)
+# demo_*.py
+
+# Archivos de configuración local
+config.local.py
+settings.local.py
+.local.env
+
+# Archivos generados automáticamente
+*.qr.png
+*.qr.jpg
+qr_generados/
+
+# Reportes generados
+reportes_generados/
+facturas_generadas/
+
+# ============================================
+# Node.js (si se importó accidentalmente)
+# ============================================
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# ============================================
+# Otros
+# ============================================
+
+# Archivos comprimidos (excepto los necesarios para el proyecto)
+*.zip
+*.tar
+*.tar.gz
+*.rar
+*.7z
+
+# Archivos de imagen grandes (opcional)
+# *.png
+# *.jpg
+# *.jpeg
+# *.gif
+
+# Mantener estructura pero ignorar contenido específico
+# /media/img/img_productos/*.png  # Si quieres ignorar imágenes de productos

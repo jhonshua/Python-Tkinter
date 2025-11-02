@@ -14,6 +14,8 @@ class GestorConfiguracion:
     def __init__(self, parent):
         self.parent = parent
         self.window = None
+        self.modo_edicion = False
+        self.usuario_editando_id = None
         self.crear_tablas_configuracion()
         
     def crear_tablas_configuracion(self):
@@ -42,7 +44,8 @@ class GestorConfiguracion:
                 ('mostrar_ambas_monedas', '1', 'Mostrar precios en ambas monedas (1=Sí, 0=No)'),
                 ('nombre_empresa', 'Mi Tienda', 'Nombre de la empresa'),
                 ('direccion_empresa', 'Caracas, Venezuela', 'Dirección de la empresa'),
-                ('telefono_empresa', '+58-212-1234567', 'Teléfono de la empresa')
+                ('telefono_empresa', '+58-212-1234567', 'Teléfono de la empresa'),
+                ('rif_empresa', 'J-00000000-0', 'RIF de la empresa')
             ]
             
             for clave, valor, descripcion in configuraciones_default:
@@ -96,35 +99,47 @@ class GestorConfiguracion:
         main_frame.pack(fill='both', expand=True, padx=20)
         
         # Frame izquierdo - Formulario
-        form_frame = tk.LabelFrame(main_frame, text="➕ Nuevo Usuario", 
+        self.form_frame_label = tk.LabelFrame(main_frame, text="➕ Nuevo Usuario", 
                                   font=('Segoe UI', 14, 'bold'), 
                                   bg=estilos.COLORS['white'],
                                   fg=estilos.COLORS['primary'])
-        form_frame.pack(side='left', fill='y', padx=(0, 10), pady=10)
+        self.form_frame_label.pack(side='left', fill='y', padx=(0, 10), pady=10)
         
         # Campos del formulario
-        tk.Label(form_frame, text="👤 Usuario:", font=('Segoe UI', 12, 'bold'), 
+        tk.Label(self.form_frame_label, text="👤 Usuario:", font=('Segoe UI', 12, 'bold'), 
                 bg=estilos.COLORS['white']).grid(row=0, column=0, sticky='w', padx=10, pady=5)
-        self.nuevo_usuario = tk.Entry(form_frame, font=('Segoe UI', 11), width=20)
+        self.nuevo_usuario = tk.Entry(self.form_frame_label, font=('Segoe UI', 11), width=20)
         self.nuevo_usuario.grid(row=0, column=1, padx=10, pady=5)
         
-        tk.Label(form_frame, text="🔒 Contraseña:", font=('Segoe UI', 12, 'bold'), 
+        tk.Label(self.form_frame_label, text="🔒 Contraseña:", font=('Segoe UI', 12, 'bold'), 
                 bg=estilos.COLORS['white']).grid(row=1, column=0, sticky='w', padx=10, pady=5)
-        self.nueva_password = tk.Entry(form_frame, font=('Segoe UI', 11), width=20, show="*")
+        self.nueva_password = tk.Entry(self.form_frame_label, font=('Segoe UI', 11), width=20, show="*")
         self.nueva_password.grid(row=1, column=1, padx=10, pady=5)
         
-        tk.Label(form_frame, text="📝 Nombre:", font=('Segoe UI', 12, 'bold'), 
+        tk.Label(self.form_frame_label, text="📝 Nombre:", font=('Segoe UI', 12, 'bold'), 
                 bg=estilos.COLORS['white']).grid(row=2, column=0, sticky='w', padx=10, pady=5)
-        self.nuevo_nombre = tk.Entry(form_frame, font=('Segoe UI', 11), width=20)
+        self.nuevo_nombre = tk.Entry(self.form_frame_label, font=('Segoe UI', 11), width=20)
         self.nuevo_nombre.grid(row=2, column=1, padx=10, pady=5)
         
+        # Frame para botones
+        buttons_form_frame = tk.Frame(self.form_frame_label, bg=estilos.COLORS['white'])
+        buttons_form_frame.grid(row=3, column=0, columnspan=2, pady=20)
+        
         # Botones
-        btn_crear = ctk.CTkButton(form_frame, text="➕ Crear Usuario", 
-                                 command=self.crear_usuario,
-                                 width=200, height=40,
+        self.btn_crear_guardar = ctk.CTkButton(buttons_form_frame, text="➕ Crear Usuario", 
+                                 command=self.crear_o_actualizar_usuario,
+                                 width=180, height=40,
                                  font=ctk.CTkFont(family="Segoe UI", size=12, weight="bold"),
                                  fg_color=estilos.COLORS['success'])
-        btn_crear.grid(row=3, column=0, columnspan=2, pady=20)
+        self.btn_crear_guardar.pack(side='left', padx=5)
+        
+        self.btn_cancelar = ctk.CTkButton(buttons_form_frame, text="❌ Cancelar", 
+                                 command=self.cancelar_edicion,
+                                 width=100, height=40,
+                                 font=ctk.CTkFont(family="Segoe UI", size=12, weight="bold"),
+                                 fg_color=estilos.COLORS['danger'])
+        self.btn_cancelar.pack(side='left', padx=5)
+        self.btn_cancelar.pack_forget()  # Ocultar inicialmente
         
         # Frame derecho - Lista de usuarios
         list_frame = tk.LabelFrame(main_frame, text="📋 Usuarios Registrados", 
@@ -147,13 +162,28 @@ class GestorConfiguracion:
         self.tree_usuarios.column("Usuario", width=150, anchor="w")
         self.tree_usuarios.column("Nombre", width=200, anchor="w")
         
+        # Frame para botones de acción
+        buttons_list_frame = tk.Frame(list_frame, bg=estilos.COLORS['white'])
+        buttons_list_frame.pack(pady=10)
+        
+        # Botón editar
+        btn_editar = ctk.CTkButton(buttons_list_frame, text="✏️ Editar Usuario", 
+                                    command=self.editar_usuario,
+                                    width=180, height=40,
+                                    font=ctk.CTkFont(family="Segoe UI", size=12, weight="bold"),
+                                    fg_color=estilos.COLORS['info'])
+        btn_editar.pack(side='left', padx=5)
+        
         # Botón eliminar
-        btn_eliminar = ctk.CTkButton(list_frame, text="🗑️ Eliminar Usuario", 
+        btn_eliminar = ctk.CTkButton(buttons_list_frame, text="🗑️ Eliminar Usuario", 
                                     command=self.eliminar_usuario,
-                                    width=200, height=40,
+                                    width=180, height=40,
                                     font=ctk.CTkFont(family="Segoe UI", size=12, weight="bold"),
                                     fg_color=estilos.COLORS['danger'])
-        btn_eliminar.pack(pady=10)
+        btn_eliminar.pack(side='left', padx=5)
+        
+        # Permitir doble clic para editar
+        self.tree_usuarios.bind('<Double-1>', lambda e: self.editar_usuario())
         
         self.cargar_usuarios()
     
@@ -290,59 +320,207 @@ class GestorConfiguracion:
         self.telefono_empresa = tk.Entry(main_frame, font=('Segoe UI', 11), width=40)
         self.telefono_empresa.grid(row=2, column=1, padx=20, pady=15)
         
+        tk.Label(main_frame, text="🏢 RIF:", font=('Segoe UI', 12, 'bold'), 
+                bg=estilos.COLORS['white']).grid(row=3, column=0, sticky='w', padx=20, pady=15)
+        self.rif_empresa = tk.Entry(main_frame, font=('Segoe UI', 11), width=40)
+        self.rif_empresa.grid(row=3, column=1, padx=20, pady=15)
+        
         # Botón guardar
         btn_guardar_empresa = ctk.CTkButton(main_frame, text="💾 Guardar Información", 
                                            command=self.guardar_info_empresa,
                                            width=250, height=45,
                                            font=ctk.CTkFont(family="Segoe UI", size=13, weight="bold"),
                                            fg_color=estilos.COLORS['success'])
-        btn_guardar_empresa.grid(row=3, column=0, columnspan=2, pady=30)
+        btn_guardar_empresa.grid(row=4, column=0, columnspan=2, pady=30)
         
         self.cargar_info_empresa()
     
     # Funciones de usuarios
-    def crear_usuario(self):
-        """Crear nuevo usuario"""
+    def crear_o_actualizar_usuario(self):
+        """Crear nuevo usuario o actualizar usuario existente"""
         usuario = self.nuevo_usuario.get().strip()
         password = self.nueva_password.get().strip()
         nombre = self.nuevo_nombre.get().strip()
         
-        if not all([usuario, password, nombre]):
-            messagebox.showerror("❌ Error", "Todos los campos son requeridos")
+        if not usuario:
+            messagebox.showerror("❌ Error", "El campo Usuario es requerido")
+            return
+        
+        if not self.modo_edicion and not password:
+            messagebox.showerror("❌ Error", "El campo Contraseña es requerido para nuevos usuarios")
             return
         
         try:
             conn = sqlite3.connect('database.db')
             cursor = conn.cursor()
             
-            # Verificar si el usuario ya existe
-            cursor.execute("SELECT username FROM usuarios WHERE username = ?", (usuario,))
-            if cursor.fetchone():
-                messagebox.showerror("❌ Error", "El usuario ya existe")
+            if self.modo_edicion:
+                # Modo edición: actualizar usuario existente
+                if self.usuario_editando_id is None:
+                    messagebox.showerror("❌ Error", "Error: No se ha seleccionado un usuario para editar")
+                    conn.close()
+                    return
+                
+                # Verificar si el nuevo nombre de usuario ya existe (y no es el mismo usuario)
+                cursor.execute("SELECT id, username FROM usuarios WHERE username = ?", (usuario,))
+                usuario_existente = cursor.fetchone()
+                if usuario_existente and usuario_existente[0] != self.usuario_editando_id:
+                    messagebox.showerror("❌ Error", "El nombre de usuario ya existe")
+                    conn.close()
+                    return
+                
+                # Obtener el nombre de usuario actual antes de cambiar
+                cursor.execute("SELECT username FROM usuarios WHERE id = ?", (self.usuario_editando_id,))
+                usuario_actual = cursor.fetchone()
+                es_admin = usuario_actual and usuario_actual[0] == 'admin'
+                
+                # Actualizar usuario
+                if password:
+                    # Si se ingresó una nueva contraseña, actualizarla
+                    password_hash = hashlib.sha256(password.encode()).hexdigest()
+                    cursor.execute("UPDATE usuarios SET username = ?, password = ? WHERE id = ?", 
+                                  (usuario, password_hash, self.usuario_editando_id))
+                else:
+                    # Si no se ingresó contraseña, solo actualizar el nombre de usuario
+                    cursor.execute("UPDATE usuarios SET username = ? WHERE id = ?", 
+                                  (usuario, self.usuario_editando_id))
+                
+                # Advertencia especial si se cambió el admin
+                if es_admin:
+                    mensaje_extra = "\n\n⚠️ IMPORTANTE: Se han modificado las credenciales del usuario administrador."
+                    if password:
+                        mensaje_extra += "\n🔒 La nueva contraseña ha sido actualizada."
+                else:
+                    mensaje_extra = ""
+                
+                conn.commit()
                 conn.close()
-                return
+                
+                mensaje_exito = f"Usuario '{usuario}' actualizado correctamente"
+                if es_admin:
+                    mensaje_exito += mensaje_extra
+                messagebox.showinfo("✅ Éxito", mensaje_exito)
+                
+            else:
+                # Modo creación: crear nuevo usuario
+                if not password:
+                    messagebox.showerror("❌ Error", "El campo Contraseña es requerido")
+                    conn.close()
+                    return
+                
+                # Verificar si el usuario ya existe
+                cursor.execute("SELECT username FROM usuarios WHERE username = ?", (usuario,))
+                if cursor.fetchone():
+                    messagebox.showerror("❌ Error", "El usuario ya existe")
+                    conn.close()
+                    return
+                
+                # Hash de la contraseña
+                password_hash = hashlib.sha256(password.encode()).hexdigest()
+                
+                # Insertar usuario
+                cursor.execute("INSERT INTO usuarios (username, password) VALUES (?, ?)", 
+                              (usuario, password_hash))
+                conn.commit()
+                conn.close()
+                
+                messagebox.showinfo("✅ Éxito", f"Usuario '{usuario}' creado correctamente")
             
-            # Hash de la contraseña
-            password_hash = hashlib.sha256(password.encode()).hexdigest()
-            
-            # Insertar usuario
-            cursor.execute("INSERT INTO usuarios (username, password) VALUES (?, ?)", 
-                          (usuario, password_hash))
-            conn.commit()
-            conn.close()
-            
-            messagebox.showinfo("✅ Éxito", f"Usuario '{usuario}' creado correctamente")
-            
-            # Limpiar campos
-            self.nuevo_usuario.delete(0, 'end')
-            self.nueva_password.delete(0, 'end')
-            self.nuevo_nombre.delete(0, 'end')
+            # Limpiar campos y salir del modo edición
+            self.cancelar_edicion()
             
             # Recargar lista
             self.cargar_usuarios()
             
         except sqlite3.Error as e:
-            messagebox.showerror("❌ Error", f"Error al crear usuario: {e}")
+            messagebox.showerror("❌ Error", f"Error al {'actualizar' if self.modo_edicion else 'crear'} usuario: {e}")
+    
+    def editar_usuario(self):
+        """Cargar datos del usuario seleccionado para editar"""
+        selection = self.tree_usuarios.selection()
+        if not selection:
+            messagebox.showwarning("⚠️ Advertencia", "Seleccione un usuario para editar")
+            return
+        
+        item = selection[0]
+        valores = self.tree_usuarios.item(item, "values")
+        usuario_id = int(valores[0])
+        username = valores[1]
+        
+        # Advertencia especial si es el usuario admin
+        if username == 'admin':
+            respuesta = messagebox.askyesno(
+                "⚠️ Advertencia de Seguridad",
+                "Está intentando editar el usuario administrador.\n\n"
+                "⚠️ IMPORTANTE:\n"
+                "• Asegúrese de recordar la nueva contraseña.\n"
+                "• Si olvida la contraseña, no podrá acceder al sistema.\n"
+                "• Se recomienda crear un usuario alternativo antes de cambiar el admin.\n\n"
+                "¿Desea continuar con la edición del usuario administrador?",
+                icon='warning'
+            )
+            if not respuesta:
+                return
+        
+        try:
+            # Obtener datos del usuario
+            conn = sqlite3.connect('database.db')
+            cursor = conn.cursor()
+            cursor.execute("SELECT id, username FROM usuarios WHERE id = ?", (usuario_id,))
+            usuario_data = cursor.fetchone()
+            conn.close()
+            
+            if not usuario_data:
+                messagebox.showerror("❌ Error", "Usuario no encontrado")
+                return
+            
+            # Activar modo edición
+            self.modo_edicion = True
+            self.usuario_editando_id = usuario_id
+            
+            # Cargar datos en el formulario
+            self.nuevo_usuario.delete(0, 'end')
+            self.nuevo_usuario.insert(0, usuario_data[1])
+            
+            self.nueva_password.delete(0, 'end')
+            self.nueva_password.insert(0, "")  # Dejar vacío para no mostrar contraseña
+            
+            self.nuevo_nombre.delete(0, 'end')
+            self.nuevo_nombre.insert(0, usuario_data[1])  # Usar username como nombre por defecto
+            
+            # Actualizar interfaz
+            if username == 'admin':
+                self.form_frame_label.config(text="⚠️ Editar Usuario Administrador")
+                self.btn_crear_guardar.config(text="💾 Guardar Cambios", fg_color=estilos.COLORS['warning'])
+            else:
+                self.form_frame_label.config(text="✏️ Editar Usuario")
+                self.btn_crear_guardar.config(text="💾 Guardar Cambios", fg_color=estilos.COLORS['info'])
+            self.btn_cancelar.pack(side='left', padx=5)
+            
+            # Seleccionar el campo de usuario
+            self.nuevo_usuario.focus()
+            
+        except sqlite3.Error as e:
+            messagebox.showerror("❌ Error", f"Error al cargar usuario: {e}")
+    
+    def cancelar_edicion(self):
+        """Cancelar modo edición y limpiar formulario"""
+        self.modo_edicion = False
+        self.usuario_editando_id = None
+        
+        # Limpiar campos
+        self.nuevo_usuario.delete(0, 'end')
+        self.nueva_password.delete(0, 'end')
+        self.nuevo_nombre.delete(0, 'end')
+        
+        # Restaurar interfaz
+        self.form_frame_label.config(text="➕ Nuevo Usuario")
+        self.btn_crear_guardar.config(text="➕ Crear Usuario", fg_color=estilos.COLORS['success'])
+        self.btn_cancelar.pack_forget()
+        
+        # Deseleccionar en el treeview
+        for item in self.tree_usuarios.selection():
+            self.tree_usuarios.selection_remove(item)
     
     def eliminar_usuario(self):
         """Eliminar usuario seleccionado"""
@@ -523,7 +701,7 @@ class GestorConfiguracion:
             conn = sqlite3.connect('database.db')
             cursor = conn.cursor()
             
-            cursor.execute("SELECT clave, valor FROM configuracion_sistema WHERE clave IN ('nombre_empresa', 'direccion_empresa', 'telefono_empresa')")
+            cursor.execute("SELECT clave, valor FROM configuracion_sistema WHERE clave IN ('nombre_empresa', 'direccion_empresa', 'telefono_empresa', 'rif_empresa')")
             configs = dict(cursor.fetchall())
             
             self.nombre_empresa.delete(0, 'end')
@@ -534,6 +712,9 @@ class GestorConfiguracion:
             
             self.telefono_empresa.delete(0, 'end')
             self.telefono_empresa.insert(0, configs.get('telefono_empresa', '+58-212-1234567'))
+            
+            self.rif_empresa.delete(0, 'end')
+            self.rif_empresa.insert(0, configs.get('rif_empresa', 'J-00000000-0'))
             
             conn.close()
         except sqlite3.Error as e:
@@ -548,7 +729,8 @@ class GestorConfiguracion:
             configs = [
                 ('nombre_empresa', self.nombre_empresa.get()),
                 ('direccion_empresa', self.direccion_empresa.get()),
-                ('telefono_empresa', self.telefono_empresa.get())
+                ('telefono_empresa', self.telefono_empresa.get()),
+                ('rif_empresa', self.rif_empresa.get())
             ]
             
             for clave, valor in configs:

@@ -30,7 +30,7 @@ class InformacionModerna(tk.Frame):
     def widgets(self):
         # Título principal
         title_frame = tk.Frame(self, bg=estilos.COLORS['bg_primary'])
-        title_frame.place(x=0, y=20, width=1400, height=80)
+        title_frame.place(x=0, y=20, width=1400, height=100)
         
         title_label = tk.Label(title_frame, text="📊 Centro de Información", 
                               font=('Segoe UI', 24, 'bold'), 
@@ -42,11 +42,11 @@ class InformacionModerna(tk.Frame):
                                  font=('Segoe UI', 12), 
                                  bg=estilos.COLORS['bg_primary'],
                                  fg=estilos.COLORS['gray'])
-        subtitle_label.place(x=50, y=55)
+        subtitle_label.place(x=50, y=60)
 
-        # Frame principal para las cards
+        # Frame principal para las cards (con más espacio desde el título)
         main_frame = tk.Frame(self, bg=estilos.COLORS['bg_primary'])
-        main_frame.place(x=50, y=120, width=1300, height=600)
+        main_frame.place(x=50, y=150, width=1300, height=600)
 
         # Card 1: Reportes de Ventas
         self.crear_card_reporte(main_frame, x=50, y=50)
@@ -75,19 +75,19 @@ class InformacionModerna(tk.Frame):
                             relief='solid', bd=1)
         card.place(x=x, y=y, width=350, height=250)
         
-        # Icono grande
-        icon_label = tk.Label(card, text="📊", font=('Segoe UI', 48), 
+        # Icono grande (tamaño optimizado para que no lo tape el texto)
+        icon_label = tk.Label(card, text="📊", font=('Segoe UI', 56), 
                              bg=estilos.COLORS['white'],
                              fg=estilos.COLORS['success'])
-        icon_label.place(x=150, y=30)
+        icon_label.place(x=145, y=15)
         
-        # Descripción
+        # Descripción (más separado del ícono)
         desc_label = tk.Label(card, text="Generar reportes detallados\nde ventas y transacciones", 
                              font=('Segoe UI', 11), 
                              bg=estilos.COLORS['white'],
                              fg=estilos.COLORS['dark'],
                              justify='center')
-        desc_label.place(x=75, y=100)
+        desc_label.place(x=75, y=120)
         
         # Botón moderno
         btn_reporte = ctk.CTkButton(
@@ -112,15 +112,15 @@ class InformacionModerna(tk.Frame):
                             relief='solid', bd=1)
         card.place(x=x, y=y, width=350, height=250)
         
-        # Icono grande
-        icon_label = tk.Label(card, text="📈", font=('Segoe UI', 48), 
+        # Icono grande (tamaño optimizado para que no lo tape el texto)
+        icon_label = tk.Label(card, text="📈", font=('Segoe UI', 56), 
                              bg=estilos.COLORS['white'],
                              fg=estilos.COLORS['info'])
-        icon_label.place(x=150, y=30)
+        icon_label.place(x=145, y=15)
         
-        # Estadísticas en tiempo real
+        # Estadísticas en tiempo real (más separado del ícono)
         self.stats_frame = tk.Frame(card, bg=estilos.COLORS['white'])
-        self.stats_frame.place(x=25, y=100, width=300, height=80)
+        self.stats_frame.place(x=25, y=120, width=300, height=70)
         
         self.cargar_estadisticas()
         
@@ -147,24 +147,23 @@ class InformacionModerna(tk.Frame):
                             relief='solid', bd=1)
         card.place(x=x, y=y, width=350, height=250)
         
-        # Icono grande
-        icon_label = tk.Label(card, text="💻", font=('Segoe UI', 48), 
+        # Icono grande (tamaño optimizado para que no lo tape el texto)
+        icon_label = tk.Label(card, text="💻", font=('Segoe UI', 56), 
                              bg=estilos.COLORS['white'],
                              fg=estilos.COLORS['accent'])
-        icon_label.place(x=150, y=30)
+        icon_label.place(x=145, y=15)
         
-        # Información del sistema
+        # Información del sistema (texto simplificado)
         info_text = f"""Sistema de Punto de Venta
 Versión: 2.0 Moderna
-Fecha: {datetime.now().strftime('%Y-%m-%d')}
-Estado: Operativo ✅"""
+Fecha: {datetime.now().strftime('%Y-%m-%d')}"""
         
         info_label = tk.Label(card, text=info_text, 
                              font=('Segoe UI', 10), 
                              bg=estilos.COLORS['white'],
                              fg=estilos.COLORS['dark'],
                              justify='center')
-        info_label.place(x=75, y=100)
+        info_label.place(x=75, y=120)
         
         # Botón moderno
         btn_info = ctk.CTkButton(
@@ -189,15 +188,15 @@ Estado: Operativo ✅"""
                             relief='solid', bd=1)
         card.place(x=x, y=y, width=350, height=250)
         
-        # Icono grande
-        icon_label = tk.Label(card, text="📦", font=('Segoe UI', 48), 
+        # Icono grande (tamaño optimizado para que no lo tape el texto)
+        icon_label = tk.Label(card, text="📦", font=('Segoe UI', 56), 
                              bg=estilos.COLORS['white'],
                              fg=estilos.COLORS['warning'])
-        icon_label.place(x=150, y=30)
+        icon_label.place(x=145, y=15)
         
-        # Frame para estadísticas de inventario
+        # Frame para estadísticas de inventario (más separado del ícono)
         self.inventario_frame = tk.Frame(card, bg=estilos.COLORS['white'])
-        self.inventario_frame.place(x=25, y=100, width=300, height=80)
+        self.inventario_frame.place(x=25, y=120, width=300, height=70)
         
         self.cargar_resumen_inventario()
         
@@ -224,15 +223,15 @@ Estado: Operativo ✅"""
                             relief='solid', bd=1)
         card.place(x=x, y=y, width=350, height=250)
         
-        # Icono grande
-        icon_label = tk.Label(card, text="📋", font=('Segoe UI', 48), 
+        # Icono grande (tamaño optimizado para que no lo tape el texto)
+        icon_label = tk.Label(card, text="📋", font=('Segoe UI', 56), 
                              bg=estilos.COLORS['white'],
                              fg=estilos.COLORS['secondary'])
-        icon_label.place(x=150, y=30)
+        icon_label.place(x=145, y=15)
         
-        # Frame para actividad reciente
+        # Frame para actividad reciente (más separado del ícono)
         self.actividad_frame = tk.Frame(card, bg=estilos.COLORS['white'])
-        self.actividad_frame.place(x=25, y=100, width=300, height=80)
+        self.actividad_frame.place(x=25, y=120, width=300, height=70)
         
         self.cargar_actividad_reciente()
         
@@ -259,19 +258,19 @@ Estado: Operativo ✅"""
                             relief='solid', bd=1)
         card.place(x=x, y=y, width=350, height=250)
         
-        # Icono grande
-        icon_label = tk.Label(card, text="⚙️", font=('Segoe UI', 48), 
+        # Icono grande (tamaño optimizado para que no lo tape el texto)
+        icon_label = tk.Label(card, text="⚙️", font=('Segoe UI', 56), 
                              bg=estilos.COLORS['white'],
                              fg=estilos.COLORS['gray'])
-        icon_label.place(x=150, y=30)
+        icon_label.place(x=145, y=15)
         
-        # Descripción
+        # Descripción (más separado del ícono)
         desc_label = tk.Label(card, text="Configurar parámetros\ndel sistema y preferencias", 
                              font=('Segoe UI', 11), 
                              bg=estilos.COLORS['white'],
                              fg=estilos.COLORS['dark'],
                              justify='center')
-        desc_label.place(x=75, y=100)
+        desc_label.place(x=75, y=120)
         
         # Botón moderno
         btn_config = ctk.CTkButton(
